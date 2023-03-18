@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Edit Recipe</title>
+<link rel="stylesheet" href="css/bootstrap.css" />
+<link rel="stylesheet" href="css/app.css" />
+<style>
+input.ng-valid {
+	background-color: lightgreen;
+}
+
+input.ng-dirty.ng-invalid-required,input.ng-dirty.ng-invalid-number {
+	background-color: red;
+}
+
+input.ng-dirty.ng-invalid-min {
+	background-color: yellow;
+}
+
+
+</style>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.js"></script>
+</head>
+
+<body>
+
+    <script>
+		var app = angular.module('myApp', []);
+		app.controller('populateCtrl', function($scope, $http, $q) {
+
+			/* Logic that handles controlling your page goes here */
+			$scope.recipe = {
+			    name : '',
+			    price : '',
+			    ingredients : [],
+			};
+			
+			$scope.ingredientName = '';
+			
+			$scope.ingredientAmount = '';
+			
+			$scope.recipePrice = '';
+			
+			$scope.clicked = false;
+			
+			$scope.priceFailure = false;
+			
+			$scope.ingredientFailure = false;
+			
+			$http.get("/api/v1/recipes").then(function(response) {
+				$scope.recipes = response.data;
+			});
+			
+			$scope.chooseRecipe = function(recipeChoice) {
+				$http.get("/api/v1/recipes/" + recipeChoice).then(function(response) {
+					$scope.recipe = response.data;
+				});
+				$scope.clicked = true;
+			}
+			
+			$scope.priceSubmit = function() {
+				$scope.priceFailure = false;
+				$http.put("/api/v1/recipes/" + $scope.recipe.name, $scope.recipePrice).then(
+					function(response) {
+						$scope.chooseRecipe($scope.recipe.name);
+						$scope.recipePrice = '';
+					}, function(rejection) {
+						$scope.priceFailure = true;
+						console.error("Error while editing Price!");
+					});
+			}
+			
+			$scope.removeIngredient = function(ingredientName) {
+				$http.delete("/api/v1/recipes/" + $scope.recipe.name + "/ingredients/" + ingredientName).then(
+						function(response) {
+							$scope.chooseRecipe($scope.recipe.name);
+						}, function(rejection) {
+							console.error("Error could not delete the ingredient!");
+						});
+			}
+			
+			$scope.editIngredient = function(ingredientName, amount) {
+				$scope.ingredientFailure = false;
+				$http.put("/api/v1/recipes/" + $scope.recipe.name + "/ingredients/" + ingredientName, amount).then(
+						function(response) {
+							$scope.chooseRecipe($scope.recipe.name);
+							$scope.ingredientAmount = '';
+						}, function(rejection) {
+							$scope.ingredientFailure = true;
+							console.error("Error while editing Ingredient!");
+						});
+			}
+			
+			$scope.addIngredient = function(ingredientName) {
+				$scope.inventoryError = true;
+				$scope.recipeError = false;
+				$scope.addSuccess = false;
+				$http.get("/api/v1/inventory").then(
+						function(response) {
+							angular.forEach( response.data.ingredients, function(ing, key){
+								if (ing.ingredient.localeCompare(ingredientName) == 0) {
+									$http.post("/api/v1/recipes/" + $scope.recipe.name + "/ingredients", ingredientName).then(
+											function(response) {
+												$scope.addSuccess = true;
+												$scope.inventoryError = false;
+												$scope.chooseRecipe($scope.recipe.name);
+												$scope.ingredientName = '';
+											}, function(rejection) {
+												$scope.recipeError = true;
+												$scope.inventoryError = false;
+												console.error("Error while adding ingredient!");
+											});
+								}
+							});
+						});
+			}
+
+		});
+	</script>
+
+    <h1>Edit Recipe</h1>
+    <div ng-app="myApp" ng-controller="populateCtrl">
+    <div style="display: flex;">
+        <div style="width: 50%;">
+            <ol>
+                <div class="row" ng-repeat="recipe in recipes">
+                    <li><button type="submit" ng-click="chooseRecipe(recipe.name)">{{recipe.name}}</button></li>
+                </div>
+            </ol>
+        </div>
+        <div style="width: 50%;">
+            <p><strong>Recipe: </strong><u>{{recipe.name}}</u></p>
+            <p><strong>Price: </strong><u>{{recipe.price}}</u></p>
+            <div ng-show="clicked">
+            <ul><input type="number" ng-model="recipePrice" name=price required="0" min="1"
+  	                   placeholder="Enter price of {{recipe.name}}">
+  	            <button type="submit" ng-click="priceSubmit()">Submit</button>
+  	            <br>
+  	            <div ng-show="priceFailure">
+  	                <p id="error-message" style="color: red;">Error invalid price</p>
+  	            </div>
+  	        </ul>
+  	        </div>
+            <p><strong>Ingredients:</strong></p>
+            <div ng-show="clicked">
+            <ul>
+                Click submit for the appropriate ingredient:
+                <br><input type="number" name=val required="0" min="1"
+  	                       ng-model="ingredientAmount" placeholder="Enter ingredient amount">
+  	            <div ng-show="ingredientFailure">
+  	                <p id="error-message" style="color: red;">Error invalid amount</p>
+  	            </div>
+  	        </ul>
+  	        </div>
+            <div class="row" ng-repeat="ing in recipe.ingredients">
+                <br>
+                <button style="background-color: #e85743" type="submit" ng-click="removeIngredient(ing.ingredient)"><b>remove {{ing.ingredient}}</b></button>
+                <b>{{ing.ingredient}}</b>: <u>{{ing.amount}}</u>
+  	            <br>
+                <button type="submit" ng-click="editIngredient(ing.ingredient, ingredientAmount)">Submit</button>
+            </div>
+            
+            <div ng-show="clicked">
+	            <br>
+	            <h3>Add Ingredient</h3>
+	            <input type="text" name=ingredientName required="0"
+  	                   ng-model="ingredientName" placeholder="Enter ingredient name">
+  	            <div ng-show="inventoryError">
+  	                 <p id="error-message" style="color: red;">Error, not in inventory</p>
+  	            </div>
+  	            <div ng-show="recipeError">
+  	                 <p id="error-message" style="color: red;">Error, could not add to recipe</p>
+  	            </div>
+  	            <br>
+  	            <button type="submit" ng-click="addIngredient(ingredientName)">Submit</button>
+            </div>
+        </div>
+    </div>
+    </div>
+  
+    <footer>
+        <a href="/index">Home</a>
+    </footer>
+</body>
+
+</html>
