@@ -26,6 +26,16 @@ public abstract class User extends DomainObject {
     }
 
     /**
+     * Set the role of the user to the role given
+     *
+     * @param role
+     *            the role of this user
+     */
+    public void setRole ( final Role role ) {
+        this.role = role;
+    }
+
+    /**
      * Enum representing the Role of a given User in the CoffeeMaker system. The
      * possible roles in the CoffeeMaker system are below.
      *

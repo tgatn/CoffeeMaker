@@ -44,8 +44,16 @@ public class RegisteredUser extends User {
      *            The password of the registered user
      */
     public RegisteredUser ( final String username, final String password ) {
-        setUsername( username );
-        setPassword( password );
+        this( null, null, username, password, null );
+    }
+
+    public RegisteredUser ( final String first, final String last, final String user, final String pass,
+            final Role role ) {
+        this.setFirstName( first );
+        this.setLastName( last );
+        this.setUsername( user );
+        this.setPassword( pass );
+        super.setRole( role );
     }
 
     /**
