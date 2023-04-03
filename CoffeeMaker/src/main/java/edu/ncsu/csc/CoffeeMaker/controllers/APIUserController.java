@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.ncsu.csc.CoffeeMaker.models.Recipe;
+import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
+import edu.ncsu.csc.CoffeeMaker.models.User;
+import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 /**
  * This is the controller that holds the REST endpoints that handle CRUD
@@ -36,40 +38,13 @@ public class APIUserController extends APIController {
     private UserService service;
 
     /**
-     * REST API method to provide GET access to all customers in the system
-     *
-     * @return JSON representation of all Customers
-     */
-    @GetMapping ( BASE_PATH + "/users/customers" )
-    public List<Recipe> getCustomers () {
-        return service.findAllCustomers();
-    }
-
-    /**
      * REST API method to provide GET access to all staff in the system
      *
      * @return JSON representation of all staff
      */
     @GetMapping ( BASE_PATH + "/users/staff" )
-    public List<Recipe> getStaff () {
-        return service.findAllStaff();
-    }
-
-    /**
-     * REST API method to provide GET access to a specific Customer user, as
-     * indicated by the path variable provided (the name of the desired user)
-     *
-     * @param username
-     *            customers username
-     * @return response to the request
-     */
-    @GetMapping ( BASE_PATH + "/users/customers/{username}" )
-    public ResponseEntity getCustomer ( @PathVariable ( "username" ) final String username ) {
-        final User user = service.findCustomerByName( username );
-        return null == user
-                ? new ResponseEntity( errorResponse( "No Customer found with username " + username ),
-                        HttpStatus.NOT_FOUND )
-                : new ResponseEntity( user, HttpStatus.OK );
+    public List<User> getStaff () {
+        return service.findAll();
     }
 
     /**
@@ -81,11 +56,10 @@ public class APIUserController extends APIController {
      * @return response to the request
      */
     @GetMapping ( BASE_PATH + "/users/staff/{username}" )
-    public ResponseEntity getStaff ( @PathVariable ( "username" ) final String username ) {
-        final User user = service.findStaffByName( username );
+    public ResponseEntity getUser ( @PathVariable ( "username" ) final String username ) {
+        final User user = service.findByName( username );
         return null == user
-                ? new ResponseEntity( errorResponse( "No Staff found with username " + username ),
-                        HttpStatus.NOT_FOUND )
+                ? new ResponseEntity( errorResponse( "No User found with username " + username ), HttpStatus.NOT_FOUND )
                 : new ResponseEntity( user, HttpStatus.OK );
     }
 
@@ -99,34 +73,10 @@ public class APIUserController extends APIController {
      * @return ResponseEntity indicating success if the User could be saved to
      *         the database, or an error if it could not be
      */
-    @PostMapping ( BASE_PATH + "/users/customers" )
-    public ResponseEntity createCustomer ( @RequestBody final User user ) {
-        if ( null != service.findCustomerByName( user.getUsername() ) ) {
-            return new ResponseEntity(
-                    errorResponse( "Customer with the name " + user.getUsername() + " already exists" ),
-                    HttpStatus.CONFLICT );
-        }
-        else {
-            service.save( user );
-            return new ResponseEntity( successResponse( user.getUsername() + " successfully created" ), HttpStatus.OK );
-        }
-
-    }
-
-    /**
-     * REST API method to provide POST access to the User model. This is used to
-     * create a new User by automatically converting the JSON RequestBody
-     * provided to a User object. Invalid JSON will fail.
-     *
-     * @param user
-     *            The valid user to be saved.
-     * @return ResponseEntity indicating success if the User could be saved to
-     *         the database, or an error if it could not be
-     */
-    @PostMapping ( BASE_PATH + "/users/staff" )
-    public ResponseEntity createStaff ( @RequestBody final User user ) {
-        if ( null != service.findStaffByName( user.getUsername() ) ) {
-            return new ResponseEntity( errorResponse( "Staff with the name " + user.getUsername() + " already exists" ),
+    @PostMapping ( BASE_PATH + "/users" )
+    public ResponseEntity createUser ( @RequestBody final RegisteredUser user ) {
+        if ( null != service.findByName( user.getUsername() ) ) {
+            return new ResponseEntity( errorResponse( "User with the name " + user.getUsername() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
         else {
@@ -146,35 +96,14 @@ public class APIUserController extends APIController {
      * @return Success if the User could be deleted; an error if the User does
      *         not exist
      */
-    @DeleteMapping ( BASE_PATH + "/users/customers/{username}" )
-    public ResponseEntity deleteRecipe ( @PathVariable final String username ) {
-        final User user = service.findCustomerByName( username );
+    @DeleteMapping ( BASE_PATH + "/users/{username}" )
+    public ResponseEntity deleteUser ( @PathVariable final String username ) {
+        final User user = service.findByName( username );
         if ( null == user ) {
             return new ResponseEntity( errorResponse( "No Customer found for name " + username ),
                     HttpStatus.NOT_FOUND );
         }
-        service.deleteCustomer( user );
-
-        return new ResponseEntity( successResponse( username + " was deleted successfully" ), HttpStatus.OK );
-    }
-
-    /**
-     * REST API method to allow deleting a User from the CoffeeMaker's system,
-     * by making a DELETE request to the API endpoint and indicating the User to
-     * delete (as a path variable)
-     *
-     * @param username
-     *            The username of the User to delete
-     * @return Success if the User could be deleted; an error if the User does
-     *         not exist
-     */
-    @DeleteMapping ( BASE_PATH + "/users/staff/{username}" )
-    public ResponseEntity deleteRecipe ( @PathVariable final String username ) {
-        final User user = service.findStaffByName( username );
-        if ( null == user ) {
-            return new ResponseEntity( errorResponse( "No Staff found for name " + username ), HttpStatus.NOT_FOUND );
-        }
-        service.deleteStaff( user );
+        service.delete( user );
 
         return new ResponseEntity( successResponse( username + " was deleted successfully" ), HttpStatus.OK );
     }
