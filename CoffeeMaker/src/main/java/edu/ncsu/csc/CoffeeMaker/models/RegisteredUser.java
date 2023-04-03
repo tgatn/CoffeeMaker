@@ -1,5 +1,9 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
 /**
  * RegisteredUser class represents a User who has a registered account in the
  * Coffee Maker system. A RegisteredUser extends the User class and stores a
@@ -9,7 +13,13 @@ package edu.ncsu.csc.CoffeeMaker.models;
  * @author jlcorrei
  *
  */
+@Entity
 public class RegisteredUser extends User {
+
+    /** User id */
+    @Id
+    @GeneratedValue
+    private Long   id;
 
     /** User name of the Registered User */
     private String username;
