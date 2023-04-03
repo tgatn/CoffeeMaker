@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
-import edu.ncsu.csc.CoffeeMaker.repositories.UserRepository;
+import edu.ncsu.csc.CoffeeMaker.repositories.StaffRepository;
 
 /**
- * The UserService is used to handle CRUD operations on the User model. In
+ * The UserService is used to handle CRUD operations on the staff User model. In
  * addition to all functionality from `Service`, we also have functionality for
  * retrieving a single customer or staff by username.
  *
@@ -19,18 +19,18 @@ import edu.ncsu.csc.CoffeeMaker.repositories.UserRepository;
  */
 @Component
 @Transactional
-public class UserService extends Service<RegisteredUser, Long> {
+public class StaffService extends Service<RegisteredUser, Long> {
 
     /**
-     * UserRepository, to be autowired in by Spring and provide CRUD operations
-     * on User model.
+     * CustomerRepository, to be autowired in by Spring and provide CRUD
+     * operations on User model.
      */
     @Autowired
-    private UserRepository userRepository;
+    private StaffRepository staffRepository;
 
     @Override
     protected JpaRepository<RegisteredUser, Long> getRepository () {
-        return userRepository;
+        return staffRepository;
     }
 
     /**
@@ -41,7 +41,7 @@ public class UserService extends Service<RegisteredUser, Long> {
      * @return found user, null if none
      */
     public RegisteredUser findByName ( final String username ) {
-        return userRepository.findByUsername( username );
+        return staffRepository.findByUsername( username );
     }
 
 }
