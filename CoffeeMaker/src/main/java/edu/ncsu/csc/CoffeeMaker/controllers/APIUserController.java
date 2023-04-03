@@ -41,8 +41,8 @@ public class APIUserController extends APIController {
      *
      * @return JSON representation of all staff
      */
-    @GetMapping ( BASE_PATH + "/users/staff" )
-    public List<RegisteredUser> getStaff () {
+    @GetMapping ( BASE_PATH + "/users" )
+    public List<RegisteredUser> getUsers () {
         return service.findAll();
     }
 
@@ -54,7 +54,7 @@ public class APIUserController extends APIController {
      *            staff username
      * @return response to the request
      */
-    @GetMapping ( BASE_PATH + "/users/staff/{username}" )
+    @GetMapping ( BASE_PATH + "/users/{username}" )
     public ResponseEntity getUser ( @PathVariable ( "username" ) final String username ) {
         final RegisteredUser user = service.findByName( username );
         return null == user

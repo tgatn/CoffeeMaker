@@ -1,5 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -44,6 +46,16 @@ public class RegisteredUser extends User {
     public RegisteredUser ( final String username, final String password ) {
         setUsername( username );
         setPassword( password );
+    }
+
+    /**
+     * Creates a default user for the coffee maker.
+     */
+    public RegisteredUser () {
+        this.username = "";
+        this.password = "";
+        this.firstName = "";
+        this.lastName = "";
     }
 
     /**
@@ -134,6 +146,22 @@ public class RegisteredUser extends User {
     public String toString () {
         return "User [id=" + this.getId() + ", Role=" + this.getRole().toString() + ", User Name=" + this.getUsername()
                 + ", First Name=" + this.getFirstName() + ", Last name=" + this.getLastName() + "]";
+    }
+
+    @Override
+    public Serializable getId () {
+        return id;
+    }
+
+    /**
+     * Set the ID of the User (Used by Hibernate)
+     *
+     * @param id
+     *            the ID
+     */
+    @SuppressWarnings ( "unused" )
+    private void setId ( final Long id ) {
+        this.id = id;
     }
 
 }
