@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
-import edu.ncsu.csc.CoffeeMaker.models.User;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 /**
@@ -43,7 +42,7 @@ public class APIUserController extends APIController {
      * @return JSON representation of all staff
      */
     @GetMapping ( BASE_PATH + "/users/staff" )
-    public List<User> getStaff () {
+    public List<RegisteredUser> getStaff () {
         return service.findAll();
     }
 
@@ -57,7 +56,7 @@ public class APIUserController extends APIController {
      */
     @GetMapping ( BASE_PATH + "/users/staff/{username}" )
     public ResponseEntity getUser ( @PathVariable ( "username" ) final String username ) {
-        final User user = service.findByName( username );
+        final RegisteredUser user = service.findByName( username );
         return null == user
                 ? new ResponseEntity( errorResponse( "No User found with username " + username ), HttpStatus.NOT_FOUND )
                 : new ResponseEntity( user, HttpStatus.OK );
@@ -98,7 +97,7 @@ public class APIUserController extends APIController {
      */
     @DeleteMapping ( BASE_PATH + "/users/{username}" )
     public ResponseEntity deleteUser ( @PathVariable final String username ) {
-        final User user = service.findByName( username );
+        final RegisteredUser user = service.findByName( username );
         if ( null == user ) {
             return new ResponseEntity( errorResponse( "No Customer found for name " + username ),
                     HttpStatus.NOT_FOUND );

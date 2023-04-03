@@ -1,9 +1,12 @@
 package edu.ncsu.csc.CoffeeMaker.services;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
-import edu.ncsu.csc.CoffeeMaker.models.User;
+import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.repositories.UserRepository;
 
 /**
@@ -14,7 +17,9 @@ import edu.ncsu.csc.CoffeeMaker.repositories.UserRepository;
  * @author Ben Abrams
  *
  */
-public class UserService extends Service<User, Long> {
+@Component
+@Transactional
+public class UserService extends Service<RegisteredUser, Long> {
 
     /**
      * UserRepository, to be autowired in by Spring and provide CRUD operations
@@ -24,7 +29,7 @@ public class UserService extends Service<User, Long> {
     private UserRepository userRepository;
 
     @Override
-    protected JpaRepository<User, Long> getRepository () {
+    protected JpaRepository<RegisteredUser, Long> getRepository () {
         return userRepository;
     }
 
@@ -35,8 +40,8 @@ public class UserService extends Service<User, Long> {
      *            Username of the user to find
      * @return found user, null if none
      */
-    public User findByName ( final String username ) {
-        return userRepository.findByName( username );
+    public RegisteredUser findByName ( final String username ) {
+        return userRepository.findByUsername( username );
     }
 
 }
