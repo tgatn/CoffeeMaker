@@ -19,15 +19,21 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.User.Role;
-import edu.ncsu.csc.CoffeeMaker.services.CustomerService;
+import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
+/**
+ * Test the Registered User and User Service Classes
+ *
+ * @author Brandon Jiang (bjiang9)
+ *
+ */
 @ExtendWith ( SpringExtension.class )
 @EnableAutoConfiguration
 @SpringBootTest ( classes = TestConfig.class )
 public class RegisteredUserTest {
 
     @Autowired
-    private CustomerService service;
+    private UserService service;
 
     @BeforeEach
     public void setup () {

@@ -25,8 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
-import edu.ncsu.csc.CoffeeMaker.services.CustomerService;
-import edu.ncsu.csc.CoffeeMaker.services.StaffService;
+import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,10 +42,7 @@ public class APIUserTest {
     private WebApplicationContext context;
 
     @Autowired
-    private CustomerService       customerService;
-
-    @Autowired
-    private StaffService          staffService;
+    private UserService           service;
 
     /**
      * Sets up the tests.
@@ -55,22 +51,21 @@ public class APIUserTest {
     public void setup () {
         mvc = MockMvcBuilders.webAppContextSetup( context ).build();
 
-        staffService.deleteAll();
-        customerService.deleteAll();
+        service.deleteAll();
+        service.deleteAll();
     }
 
     @Test
     @Transactional
     public void testCustomer () throws Exception {
         // ensure there are no customers to begin with
-        Assertions.assertEquals( 0, customerService.findAll().size(),
-                "There should be no Customers in the CoffeeMaker" );
+        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Customers in the CoffeeMaker" );
 
         // make first Customer
         final RegisteredUser customer1 = createUser( "customer1", "password1", "first1", "last1" );
 
-        customerService.save( customer1 );
-        assertEquals( 1, customerService.count() );
+        service.save( customer1 );
+        assertEquals( 1, service.count() );
 
         mvc.perform( post( "/api/v1/users/customers" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer1 ) ) );
@@ -78,8 +73,8 @@ public class APIUserTest {
         // make second staff
         final RegisteredUser customer2 = createUser( "customer2", "password2", "first2", "last2" );
 
-        customerService.save( customer2 );
-        assertEquals( 2, customerService.count() );
+        service.save( customer2 );
+        assertEquals( 2, service.count() );
 
         mvc.perform( post( "/api/v1/users/customers" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer2 ) ) );
@@ -106,7 +101,7 @@ public class APIUserTest {
         // delete first customer
         mvc.perform( delete( "/api/v1/users/customers/customer1" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
-        assertEquals( 1, customerService.count() );
+        assertEquals( 1, service.count() );
         final String customers3 = mvc
                 .perform( get( "/api/v1/users/customers" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
                 .getResponse().getContentAsString();
@@ -123,13 +118,13 @@ public class APIUserTest {
     @Transactional
     public void testStaff () throws Exception {
         // ensure there are no staffs to begin with
-        Assertions.assertEquals( 0, staffService.findAll().size(), "There should be no Staff in the CoffeeMaker" );
+        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Staff in the CoffeeMaker" );
 
         // make first Staff
         final RegisteredUser staff1 = createUser( "staff1", "password1", "first1", "last1" );
 
-        staffService.save( staff1 );
-        assertEquals( 1, staffService.count() );
+        service.save( staff1 );
+        assertEquals( 1, service.count() );
 
         mvc.perform( post( "/api/v1/users/staff" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( staff1 ) ) );
@@ -137,8 +132,8 @@ public class APIUserTest {
         // make second Staff
         final RegisteredUser staff2 = createUser( "staff2", "password2", "first2", "last2" );
 
-        staffService.save( staff2 );
-        assertEquals( 2, staffService.count() );
+        service.save( staff2 );
+        assertEquals( 2, service.count() );
 
         mvc.perform( post( "/api/v1/users/staff" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( staff2 ) ) );
@@ -164,7 +159,7 @@ public class APIUserTest {
         // delete first staff
         mvc.perform( delete( "/api/v1/users/staff/staff1" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
-        assertEquals( 1, staffService.count() );
+        assertEquals( 1, service.count() );
         final String staffs3 = mvc.perform( get( "/api/v1/users/staff" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andReturn().getResponse().getContentAsString();
         assertFalse( staffs3.contains( "staff1" ) );

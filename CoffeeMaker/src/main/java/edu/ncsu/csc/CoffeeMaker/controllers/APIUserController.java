@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
-import edu.ncsu.csc.CoffeeMaker.services.CustomerService;
+import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 /**
  * This is the controller that holds the REST endpoints that handle CRUD
@@ -34,14 +34,14 @@ public class APIUserController extends APIController {
      * manipulating the User model
      */
     @Autowired
-    private CustomerService customerService;
+    private UserService customerService;
 
     /**
      * UserService object, to be autowired in by Spring to allow for
      * manipulating the User model
      */
     @Autowired
-    private CustomerService staffService;
+    private UserService staffService;
 
     /**
      * REST API method to provide login access for customers
