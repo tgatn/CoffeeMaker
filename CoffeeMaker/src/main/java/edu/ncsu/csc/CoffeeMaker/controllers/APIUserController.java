@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
+import edu.ncsu.csc.CoffeeMaker.models.User;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 /**
@@ -37,23 +38,62 @@ public class APIUserController extends APIController {
     private UserService service;
 
     /**
-     * REST API method to provide login access for users
+     * REST API method to provide login access for customers
+     *
+     * @param user
+     *            the user trying to login
+     * @param password
+     *            the entered password
      *
      * @return response to the request
      */
-    @PostMapping ( BASE_PATH + "/login" )
-    public ResponseEntity userLogin ( @RequestBody final RegisteredUser user ) {
-        final RegisteredUser dbUser = service.findByName( user.getUsername() );
+    @PostMapping ( BASE_PATH + "/customer/login/{username}" )
+    public ResponseEntity customerLogin ( @PathVariable final String username, @RequestBody final String password ) {
+        final RegisteredUser dbUser = service.findByName( username );
         if ( dbUser == null ) {
-            return new ResponseEntity( errorResponse( "No User found with username " + user.getUsername() ),
+            return new ResponseEntity( errorResponse( "No User found with username " + username ),
                     HttpStatus.NOT_FOUND );
         }
-
-        if ( !dbUser.getPassword().equals( user.getPassword() ) ) {
+        // If the found user is not a customer then deny access
+        if ( dbUser.getRole() != User.Role.CUSTOMER ) {
+            return new ResponseEntity( errorResponse( "No Customer found with username " + username ),
+                    HttpStatus.UNAUTHORIZED );
+        }
+        // If the user enters an invalid password deny access
+        if ( !dbUser.checkPassword( password ) ) {
             return new ResponseEntity( errorResponse( "Invalid password" ), HttpStatus.UNAUTHORIZED );
         }
 
-        return new ResponseEntity( successResponse( user.getUsername() + " successfully logged in" ), HttpStatus.OK );
+        return new ResponseEntity( successResponse( username + " successfully logged in" ), HttpStatus.OK );
+    }
+
+    /**
+     * REST API method to provide login access for staff
+     *
+     * @param user
+     *            the user trying to login
+     * @param password
+     *            the entered password
+     *
+     * @return response to the request
+     */
+    @PostMapping ( BASE_PATH + "/staff/login/{username}" )
+    public ResponseEntity staffLogin ( @PathVariable final String username, @RequestBody final String password ) {
+        final RegisteredUser dbUser = service.findByName( username );
+        if ( dbUser == null ) {
+            return new ResponseEntity( errorResponse( "No User found with username " + username ),
+                    HttpStatus.NOT_FOUND );
+        }
+        // If the found user is not a staff or manager then deny access
+        if ( dbUser.getRole() != User.Role.MANAGER && dbUser.getRole() != User.Role.EMPLOYEE ) {
+            return new ResponseEntity( errorResponse( "No Staff found with username " + username ),
+                    HttpStatus.UNAUTHORIZED );
+        }
+        if ( !dbUser.checkPassword( password ) ) {
+            return new ResponseEntity( errorResponse( "Invalid password" ), HttpStatus.UNAUTHORIZED );
+        }
+
+        return new ResponseEntity( successResponse( username + " successfully logged in" ), HttpStatus.OK );
     }
 
     /**

@@ -35,6 +35,9 @@ public class RegisteredUser extends User {
     /** The user's last name */
     private String lastName;
 
+    /** User role */
+    private Role   role;
+
     /**
      * Constructs a RegisteredUser using the given user name and password.
      *
@@ -53,7 +56,7 @@ public class RegisteredUser extends User {
         this.setLastName( last );
         this.setUsername( user );
         this.setPassword( pass );
-        super.setRole( role );
+        setRole( role );
     }
 
     /**
@@ -64,6 +67,7 @@ public class RegisteredUser extends User {
         this.password = "";
         this.firstName = "";
         this.lastName = "";
+        this.role = null;
     }
 
     /**
@@ -91,6 +95,25 @@ public class RegisteredUser extends User {
      */
     public String getLastName () {
         return this.lastName;
+    }
+
+    /**
+     * Returns the role of the given User.
+     *
+     * @return User's role.
+     */
+    public Role getRole () {
+        return this.role;
+    }
+
+    /**
+     * Set the role of the user to the role given
+     *
+     * @param role
+     *            the role of this user
+     */
+    public void setRole ( final Role role ) {
+        this.role = role;
     }
 
     /**

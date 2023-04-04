@@ -25,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
+import edu.ncsu.csc.CoffeeMaker.models.User.Role;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 @SpringBootTest
@@ -62,7 +63,7 @@ public class APIUserTest {
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Customers in the CoffeeMaker" );
 
         // make first Customer
-        final RegisteredUser customer1 = createUser( "customer1", "password1", "first1", "last1" );
+        final RegisteredUser customer1 = createUser( "customer1", "password1", "first1", "last1", Role.CUSTOMER );
 
         service.save( customer1 );
         assertEquals( 1, service.count() );
@@ -70,8 +71,8 @@ public class APIUserTest {
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer1 ) ) );
 
-        // make second staff
-        final RegisteredUser customer2 = createUser( "customer2", "password2", "first2", "last2" );
+        // make second customer
+        final RegisteredUser customer2 = createUser( "customer2", "password2", "first2", "last2", Role.CUSTOMER );
 
         service.save( customer2 );
         assertEquals( 2, service.count() );
@@ -97,6 +98,22 @@ public class APIUserTest {
         assertTrue( customers2.contains( "customer1" ) );
         assertTrue( customers2.contains( "customer2" ) );
 
+        // check passwords
+        // check valid password
+        mvc.perform( post( "/api/v1/customer/login/customer2" ).contentType( MediaType.APPLICATION_JSON )
+                .content( "password2" ) ).andExpect( status().isOk() );
+        // check invalid password
+        mvc.perform( post( "/api/v1/customer/login/customer2" ).contentType( MediaType.APPLICATION_JSON )
+                .content( "password1" ) ).andExpect( status().isUnauthorized() );
+        // check invalid username
+        mvc.perform( post( "/api/v1/customer/login/random" ).contentType( MediaType.APPLICATION_JSON )
+                .content( "password1" ) ).andExpect( status().isNotFound() );
+        // check staff login
+        mvc.perform( post( "/api/v1/staff/login/customer2" ).contentType( MediaType.APPLICATION_JSON )
+                .content( "password2" ) ).andExpect( status().isUnauthorized() );
+
+        // check invalid password
+
         // delete first customer
         mvc.perform( delete( "/api/v1/users/customer1" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
@@ -119,7 +136,7 @@ public class APIUserTest {
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Staff in the CoffeeMaker" );
 
         // make first Staff
-        final RegisteredUser staff1 = createUser( "staff1", "password1", "first1", "last1" );
+        final RegisteredUser staff1 = createUser( "staff1", "password1", "first1", "last1", Role.EMPLOYEE );
 
         service.save( staff1 );
         assertEquals( 1, service.count() );
@@ -128,7 +145,7 @@ public class APIUserTest {
                 .content( TestUtils.asJsonString( staff1 ) ) );
 
         // make second Staff
-        final RegisteredUser staff2 = createUser( "staff2", "password2", "first2", "last2" );
+        final RegisteredUser staff2 = createUser( "staff2", "password2", "first2", "last2", Role.EMPLOYEE );
 
         service.save( staff2 );
         assertEquals( 2, service.count() );
@@ -150,6 +167,23 @@ public class APIUserTest {
         final String staffs2 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andReturn().getResponse().getContentAsString();
 
+        // check passwords
+        // check valid password
+        mvc.perform(
+                post( "/api/v1/staff/login/staff2" ).contentType( MediaType.APPLICATION_JSON ).content( "password2" ) )
+                .andExpect( status().isOk() );
+        // check invalid password
+        mvc.perform(
+                post( "/api/v1/staff/login/staff2" ).contentType( MediaType.APPLICATION_JSON ).content( "password1" ) )
+                .andExpect( status().isUnauthorized() );
+        // check invalid username
+        mvc.perform(
+                post( "/api/v1/staff/login/random" ).contentType( MediaType.APPLICATION_JSON ).content( "password1" ) )
+                .andExpect( status().isNotFound() );
+        // check staff login
+        mvc.perform( post( "/api/v1/customer/login/staff2" ).contentType( MediaType.APPLICATION_JSON )
+                .content( "password2" ) ).andExpect( status().isUnauthorized() );
+
         assertTrue( staffs2.contains( "staff1" ) );
         assertTrue( staffs2.contains( "staff2" ) );
 
@@ -169,10 +203,11 @@ public class APIUserTest {
     }
 
     private RegisteredUser createUser ( final String username, final String password, final String first,
-            final String last ) {
+            final String last, final Role role ) {
         final RegisteredUser user = new RegisteredUser( username, password );
         user.setFirstName( first );
         user.setLastName( last );
+        user.setRole( role );
 
         return user;
     }
