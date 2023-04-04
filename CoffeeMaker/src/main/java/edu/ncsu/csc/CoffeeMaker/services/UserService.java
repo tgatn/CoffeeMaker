@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
-import edu.ncsu.csc.CoffeeMaker.repositories.CustomerRepository;
+import edu.ncsu.csc.CoffeeMaker.repositories.UserRepository;
 
 /**
  * The UserService is used to handle CRUD operations on the customer User model.
@@ -26,7 +26,7 @@ public class UserService extends Service<RegisteredUser, Long> {
      * operations on User model.
      */
     @Autowired
-    private CustomerRepository customerRepository;
+    private UserRepository customerRepository;
 
     @Override
     protected JpaRepository<RegisteredUser, Long> getRepository () {

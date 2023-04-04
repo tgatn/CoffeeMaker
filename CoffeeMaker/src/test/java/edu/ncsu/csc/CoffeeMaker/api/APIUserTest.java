@@ -67,7 +67,7 @@ public class APIUserTest {
         service.save( customer1 );
         assertEquals( 1, service.count() );
 
-        mvc.perform( post( "/api/v1/users/customers" ).contentType( MediaType.APPLICATION_JSON )
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer1 ) ) );
 
         // make second staff
@@ -76,13 +76,13 @@ public class APIUserTest {
         service.save( customer2 );
         assertEquals( 2, service.count() );
 
-        mvc.perform( post( "/api/v1/users/customers" ).contentType( MediaType.APPLICATION_JSON )
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer2 ) ) );
 
         // get specific customer
         final String customers = mvc
-                .perform( get( "/api/v1/users/customers/customer2" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andReturn().getResponse().getContentAsString();
+                .perform( get( "/api/v1/users/customer2" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
+                .getResponse().getContentAsString();
 
         assertTrue( customers.contains( "customer2" ) );
 
@@ -91,25 +91,23 @@ public class APIUserTest {
                 .andExpect( status().isNotFound() );
 
         // get all customers
-        final String customers2 = mvc
-                .perform( get( "/api/v1/users/customers" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
-                .getResponse().getContentAsString();
+        final String customers2 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
 
         assertTrue( customers2.contains( "customer1" ) );
         assertTrue( customers2.contains( "customer2" ) );
 
         // delete first customer
-        mvc.perform( delete( "/api/v1/users/customers/customer1" ).contentType( MediaType.APPLICATION_JSON ) )
+        mvc.perform( delete( "/api/v1/users/customer1" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
         assertEquals( 1, service.count() );
-        final String customers3 = mvc
-                .perform( get( "/api/v1/users/customers" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
-                .getResponse().getContentAsString();
+        final String customers3 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
         assertFalse( customers3.contains( "customer1" ) );
         assertTrue( customers3.contains( "customer2" ) );
 
         // delete null customer
-        mvc.perform( delete( "/api/v1/users/customers/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
+        mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
     }
@@ -126,7 +124,7 @@ public class APIUserTest {
         service.save( staff1 );
         assertEquals( 1, service.count() );
 
-        mvc.perform( post( "/api/v1/users/staff" ).contentType( MediaType.APPLICATION_JSON )
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( staff1 ) ) );
 
         // make second Staff
@@ -135,38 +133,37 @@ public class APIUserTest {
         service.save( staff2 );
         assertEquals( 2, service.count() );
 
-        mvc.perform( post( "/api/v1/users/staff" ).contentType( MediaType.APPLICATION_JSON )
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( staff2 ) ) );
 
         // get specific Staff
-        final String staffs = mvc
-                .perform( get( "/api/v1/users/staff/staff2" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
-                .getResponse().getContentAsString();
+        final String staffs = mvc.perform( get( "/api/v1/users/staff2" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
 
         assertTrue( staffs.contains( "staff2" ) );
 
         // get null staff
-        mvc.perform( get( "/api/v1/users/staff/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
+        mvc.perform( get( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
         // get all staff
-        final String staffs2 = mvc.perform( get( "/api/v1/users/staff" ).contentType( MediaType.APPLICATION_JSON ) )
+        final String staffs2 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andReturn().getResponse().getContentAsString();
 
         assertTrue( staffs2.contains( "staff1" ) );
         assertTrue( staffs2.contains( "staff2" ) );
 
         // delete first staff
-        mvc.perform( delete( "/api/v1/users/staff/staff1" ).contentType( MediaType.APPLICATION_JSON ) )
+        mvc.perform( delete( "/api/v1/users/staff1" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
         assertEquals( 1, service.count() );
-        final String staffs3 = mvc.perform( get( "/api/v1/users/staff" ).contentType( MediaType.APPLICATION_JSON ) )
+        final String staffs3 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andReturn().getResponse().getContentAsString();
         assertFalse( staffs3.contains( "staff1" ) );
         assertTrue( staffs3.contains( "staff2" ) );
 
         // delete null staff
-        mvc.perform( delete( "/api/v1/users/staff/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
+        mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
     }

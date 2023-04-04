@@ -11,11 +11,11 @@ import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
  * @author Ben Abrams
  *
  */
-public interface CustomerRepository extends JpaRepository<RegisteredUser, Long> {
+public interface UserRepository extends JpaRepository<RegisteredUser, Long> {
 
     /**
-     * Finds a customer User object with the provided username. Spring will
-     * generate code to make this happen.
+     * Finds a User object with the provided username. Spring will generate code
+     * to make this happen.
      *
      * @param username
      *            Username of the user
