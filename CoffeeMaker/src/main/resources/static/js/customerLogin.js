@@ -32,8 +32,7 @@ app.controller('myCtrl', function($scope, $http, $sce) {
     `);
     
     // Make API request
-    $http.post('/customer/login', {
-        username: $scope.username,
+    $http.post(`api/v1/customer/login/${$scope.username}`, {
         password: $scope.password
       })
       .then(function(response) {
