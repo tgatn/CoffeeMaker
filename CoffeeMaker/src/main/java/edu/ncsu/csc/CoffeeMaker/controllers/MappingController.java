@@ -24,76 +24,77 @@ public class MappingController {
      */
     @GetMapping ( { "/index", "/" } )
     public String index ( final Model model ) {
-        return "index";
+        return "redirect:/login";
     }
 
-    /**
-     * On a GET request to /recipe, the RecipeController will return
-     * /src/main/resources/templates/recipe.html.
-     *
-     * @param model
-     *            underlying UI model
-     * @return contents of the page
-     */
-    @GetMapping ( { "/recipe", "/recipe.html" } )
-    public String addRecipePage ( final Model model ) {
-        return "recipe";
-    }
-
-    /**
-     * On a GET request to /addingredient, the RecipeController will return
-     * /src/main/resources/templates/addingredient.html.
-     *
-     * @param model
-     *            underlying UI model
-     * @return contents of the page
-     */
-    @GetMapping ( { "/addingredient", "/addingredient.html" } )
-    public String addIngredientPage ( final Model model ) {
-        return "addingredient";
-    }
-
-    /**
-     * On a GET request to /deleterecipe, the DeleteRecipeController will return
-     * /src/main/resources/templates/deleterecipe.html.
-     *
-     * @param model
-     *            underlying UI model
-     * @return contents of the page
-     */
-    @GetMapping ( { "/deleterecipe", "/deleterecipe.html" } )
-    public String deleteRecipeForm ( final Model model ) {
-        return "deleterecipe";
-    }
-
-    /**
-     * On a GET request to /editrecipe, the EditRecipeController will return
-     * /src/main/resources/templates/editrecipe.html.
-     *
-     * @param model
-     *            underlying UI model
-     * @return contents of the page
-     */
-    @GetMapping ( { "/editrecipe", "/editrecipe.html" } )
-    public String editRecipeForm ( final Model model ) {
-        return "editrecipe";
-    }
-
-    /**
-     * Handles a GET request for inventory. The GET request provides a view to
-     * the client that includes the list of the current ingredients in the
-     * inventory and a form where the client can enter more ingredients to add
-     * to the inventory.
-     *
-     * @param model
-     *            underlying UI model
-     * @return contents of the page
-     */
-    @GetMapping ( { "/inventory", "/inventory.html" } )
-    public String inventoryForm ( final Model model ) {
-        return "inventory";
-    }
-
+    // /**
+    // * On a GET request to /recipe, the RecipeController will return
+    // * /src/main/resources/templates/recipe.html.
+    // *
+    // * @param model
+    // * underlying UI model
+    // * @return contents of the page
+    // */
+    // @GetMapping ( { "/recipe", "/recipe.html" } )
+    // public String addRecipePage ( final Model model ) {
+    // return "recipe";
+    // }
+    //
+    // /**
+    // * On a GET request to /addingredient, the RecipeController will return
+    // * /src/main/resources/templates/addingredient.html.
+    // *
+    // * @param model
+    // * underlying UI model
+    // * @return contents of the page
+    // */
+    // @GetMapping ( { "/addingredient", "/addingredient.html" } )
+    // public String addIngredientPage ( final Model model ) {
+    // return "addingredient";
+    // }
+    //
+    // /**
+    // * On a GET request to /deleterecipe, the DeleteRecipeController will
+    // return
+    // * /src/main/resources/templates/deleterecipe.html.
+    // *
+    // * @param model
+    // * underlying UI model
+    // * @return contents of the page
+    // */
+    // @GetMapping ( { "/deleterecipe", "/deleterecipe.html" } )
+    // public String deleteRecipeForm ( final Model model ) {
+    // return "deleterecipe";
+    // }
+    //
+    // /**
+    // * On a GET request to /editrecipe, the EditRecipeController will return
+    // * /src/main/resources/templates/editrecipe.html.
+    // *
+    // * @param model
+    // * underlying UI model
+    // * @return contents of the page
+    // */
+    // @GetMapping ( { "/editrecipe", "/editrecipe.html" } )
+    // public String editRecipeForm ( final Model model ) {
+    // return "editrecipe";
+    // }
+    //
+    // /**
+    // * Handles a GET request for inventory. The GET request provides a view to
+    // * the client that includes the list of the current ingredients in the
+    // * inventory and a form where the client can enter more ingredients to add
+    // * to the inventory.
+    // *
+    // * @param model
+    // * underlying UI model
+    // * @return contents of the page
+    // */
+    // @GetMapping ( { "/inventory", "/inventory.html" } )
+    // public String inventoryForm ( final Model model ) {
+    // return "inventory";
+    // }
+    //
     /**
      * On a GET request to /makecoffee, the MakeCoffeeController will return
      * /src/main/resources/templates/makecoffee.html.
@@ -105,6 +106,58 @@ public class MappingController {
     @GetMapping ( { "/makecoffee", "/makecoffee.html" } )
     public String makeCoffeeForm ( final Model model ) {
         return "makecoffee";
+    }
+
+    /**
+     * On a GET request to /stafflogin, the MakeCoffeeController will return
+     * /src/main/resources/templates/staffLogin.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/stafflogin", "/staffLogin.html" } )
+    public String staffLogin ( final Model model ) {
+        return "stafflogin";
+    }
+
+    /**
+     * On a GET request to /customerlogin, the MakeCoffeeController will return
+     * /src/main/resources/templates/customerLogin.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/customerlogin", "/customerLogin.html" } )
+    public String customerLogin ( final Model model ) {
+        return "customerlogin";
+    }
+
+    /**
+     * On a GET request to /login, the MakeCoffeeController will return
+     * /src/main/resources/templates/login.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/login", "/login.html" } )
+    public String login ( final Model model ) {
+        return "login";
+    }
+
+    /**
+     * On a GET request to /signup, the MakeCoffeeController will return
+     * /src/main/resources/templates/signUp.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/signup", "/signUp.html" } )
+    public String signUp ( final Model model ) {
+        return "signup";
     }
 
 }

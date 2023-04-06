@@ -8,9 +8,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>edu.ncsu.csc</groupId>
-	<artifactId>CoffeeMaker-Individual</artifactId>
+	<artifactId>CoffeeMaker</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CoffeeMaker-Individual</name>
+	<name>CoffeeMaker</name>
 	<description>CoffeeMaker with transaction support</description>
 
 

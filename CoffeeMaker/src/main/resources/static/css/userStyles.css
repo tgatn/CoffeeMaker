@@ -1,0 +1,91 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+    background: linear-gradient(-32deg, #ffffff 50%, #000000 50%);
+}
+
+.card-body {
+    display:grid;
+    justify-content: center;
+    gap: 20px;
+    border: 2px solid lightgray;
+    border-radius: 10px;
+    position: fixed;
+    width: 500px;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    box-shadow: rgba(143, 104, 104, 0.24) 0px 3px 8px;
+    background-color: white;
+}
+
+.form-control:focus {
+    border-color: black;
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.25);
+  }
+
+p {
+    text-align: center;
+}
+
+a {
+    font-weight: bold;
+}
+
+u:hover {
+    color: gray;
+}
+
+
+@media only screen and (max-width: 550px) {
+    .card-body{
+      width: 85%;
+      height: 70%;
+    }
+  }
+
+  .success-message {
+    display:none;
+    width: 300px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .back-button {
+    position: absolute;
+    color:black;
+    top: 30px;
+    left: 10px;
+  }
+  .back-button:hover i {
+    transform: translateX(-5px);
+    color: gray;
+  }
+
+  .error, .error-icon, .error-password {
+    background-color: rgb(250, 205, 205);
+  }
+
+  .error-icon {
+    color: red;
+    border-left: none;
+  }
+
+  .error-password {
+    border-right: none;
+  }
+
+  .spinner {
+    margin-right: 10px;
+    animation: rotate 1s infinite linear;
+  }
+  
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="css/userStyles.css">
+    <title>CoffeeMaker Login</title>
+</head>
+
+<body ng-controller="myCtrl">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="card-body">
+                <a href="./login.html" class="btn btn-link back-button"><i class="fas fa-arrow-left fa-lg"></i></a>
+                <h1 class="card-title text-center mb-4">Staff</h1>
+                <div class="success-message" ng-style="successMessageStyles" ng-show="showSuccessMessage" ng-bind-html="successMessage">{{successMessage}}</div>
+                <form ng-submit="submitForm()">
+                    <div class="form-group">
+                        <input type="text" class="form-control" ng-class="{'error': hasError}" ng-model="username" placeholder="Username" required="true">
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="{{passwordInputType}}" class="form-control" ng-class="{'error-password': hasError}" ng-model="password" placeholder="Password" required="true">
+                            <div class="input-group-append">
+                                <span class="input-group-text toggle-password" ng-class="{'error-icon': hasError}" id="toggle-password" ng-click="togglePassword()"><i class="far fa-eye {{togglePasswordIcon}}" id="toggle-password-icon"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-dark btn-block mt-4 mb-5">Login</button>
+                </form>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="js/staffLogin.js"></script>
+</body>
+
+</html>
