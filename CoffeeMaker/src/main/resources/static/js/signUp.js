@@ -30,11 +30,12 @@ app.controller('myCtrl', function($scope, $http, $sce) {
   `);
     
     // Make API request to register endpoint
-    $http.post('/users', {
+    $http.post('/api/v1/users', {
         username: $scope.username,
         password: $scope.password,
-        first_name: $scope.firstname,
-        last_name: $scope.lastname
+        firstName: $scope.firstname,
+        lastName: $scope.lastname,
+        role: 0
       })
       .then(function(response) {
         // On success, show success message and redirect
@@ -42,7 +43,7 @@ app.controller('myCtrl', function($scope, $http, $sce) {
           <div><i class="fas fa-check" style="color: #4ad219;"></i></div>
           <div style="margin-left: 5px;">Welcome, ${$scope.username}!</div>
         `);
-          window.location.href = 'staffIndex.html';
+          window.location.href = 'login.html';
       })
       .catch(function(error) {
         // On error, show error message

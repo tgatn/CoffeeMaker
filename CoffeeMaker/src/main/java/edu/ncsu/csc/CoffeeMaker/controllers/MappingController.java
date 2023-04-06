@@ -95,18 +95,18 @@ public class MappingController {
     // return "inventory";
     // }
     //
-    // /**
-    // * On a GET request to /makecoffee, the MakeCoffeeController will return
-    // * /src/main/resources/templates/makecoffee.html.
-    // *
-    // * @param model
-    // * underlying UI model
-    // * @return contents of the page
-    // */
-    // @GetMapping ( { "/makecoffee", "/makecoffee.html" } )
-    // public String makeCoffeeForm ( final Model model ) {
-    // return "makecoffee";
-    // }
+    /**
+     * On a GET request to /makecoffee, the MakeCoffeeController will return
+     * /src/main/resources/templates/makecoffee.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/makecoffee", "/makecoffee.html" } )
+    public String makeCoffeeForm ( final Model model ) {
+        return "makecoffee";
+    }
 
     /**
      * On a GET request to /stafflogin, the MakeCoffeeController will return

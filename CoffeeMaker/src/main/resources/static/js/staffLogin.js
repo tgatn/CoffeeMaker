@@ -30,17 +30,15 @@ app.controller('myCtrl', function($scope, $http, $sce) {
     `);
     
     // Make API request
-    $http.post('/staff/login', {
-        username: $scope.username,
-        password: $scope.password
-      })
+    $http.post(`api/v1/staff/login/${$scope.username}`,
+        $scope.password)
       .then(function(response) {
         // On success, show success message and redirect
         $scope.successMessage = $sce.trustAsHtml(`
           <div><i class="fas fa-check" style="color: #4ad219;"></i></div>
           <div style="margin-left: 5px;">Successfully logged in!</div>
         `);
-          window.location.href = 'staffIndex.html';
+          window.location.href = 'makecoffee.html';
       })
       .catch(function(error) {
         // On error, show error message

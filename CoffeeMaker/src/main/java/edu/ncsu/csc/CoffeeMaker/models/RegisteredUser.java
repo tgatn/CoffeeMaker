@@ -1,5 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -33,6 +35,9 @@ public class RegisteredUser extends User {
     /** The user's last name */
     private String lastName;
 
+    /** User role */
+    private Role   role;
+
     /**
      * Constructs a RegisteredUser using the given user name and password.
      *
@@ -42,8 +47,27 @@ public class RegisteredUser extends User {
      *            The password of the registered user
      */
     public RegisteredUser ( final String username, final String password ) {
-        setUsername( username );
-        setPassword( password );
+        this( null, null, username, password, null );
+    }
+
+    public RegisteredUser ( final String first, final String last, final String user, final String pass,
+            final Role role ) {
+        this.setFirstName( first );
+        this.setLastName( last );
+        this.setUsername( user );
+        this.setPassword( pass );
+        setRole( role );
+    }
+
+    /**
+     * Creates a default user for the coffee maker.
+     */
+    public RegisteredUser () {
+        this.username = "";
+        this.password = "";
+        this.firstName = "";
+        this.lastName = "";
+        this.role = null;
     }
 
     /**
@@ -71,6 +95,25 @@ public class RegisteredUser extends User {
      */
     public String getLastName () {
         return this.lastName;
+    }
+
+    /**
+     * Returns the role of the given User.
+     *
+     * @return User's role.
+     */
+    public Role getRole () {
+        return this.role;
+    }
+
+    /**
+     * Set the role of the user to the role given
+     *
+     * @param role
+     *            the role of this user
+     */
+    public void setRole ( final Role role ) {
+        this.role = role;
     }
 
     /**
@@ -134,6 +177,22 @@ public class RegisteredUser extends User {
     public String toString () {
         return "User [id=" + this.getId() + ", Role=" + this.getRole().toString() + ", User Name=" + this.getUsername()
                 + ", First Name=" + this.getFirstName() + ", Last name=" + this.getLastName() + "]";
+    }
+
+    @Override
+    public Serializable getId () {
+        return id;
+    }
+
+    /**
+     * Set the ID of the User (Used by Hibernate)
+     *
+     * @param id
+     *            the ID
+     */
+    @SuppressWarnings ( "unused" )
+    private void setId ( final Long id ) {
+        this.id = id;
     }
 
 }
