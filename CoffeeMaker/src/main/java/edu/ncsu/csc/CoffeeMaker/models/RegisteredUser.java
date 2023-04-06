@@ -50,6 +50,20 @@ public class RegisteredUser extends User {
         this( null, null, username, password, null );
     }
 
+    /**
+     * Creates a user with the given parameters.
+     *
+     * @param first
+     *            users first name
+     * @param last
+     *            users last name
+     * @param user
+     *            users username
+     * @param pass
+     *            users password
+     * @param role
+     *            users role
+     */
     public RegisteredUser ( final String first, final String last, final String user, final String pass,
             final Role role ) {
         this.setFirstName( first );

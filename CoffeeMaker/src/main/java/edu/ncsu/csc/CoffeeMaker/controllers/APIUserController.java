@@ -40,7 +40,7 @@ public class APIUserController extends APIController {
     /**
      * REST API method to provide login access for customers
      *
-     * @param user
+     * @param username
      *            the user trying to login
      * @param password
      *            the entered password
@@ -70,7 +70,7 @@ public class APIUserController extends APIController {
     /**
      * REST API method to provide login access for staff
      *
-     * @param user
+     * @param username
      *            the user trying to login
      * @param password
      *            the entered password
