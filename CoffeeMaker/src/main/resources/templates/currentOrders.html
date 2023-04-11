@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/loginStyles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Current Orders</title>
+</head>
+<body class="bg-dark">
+    <div class="loginForm" id="customerLoginForm" ng-controller="myCtrl">
+        <h1>CoffeeMaker</h1>
+        <div ng-if="currentOrders.length === 0">
+            <p>You have no current orders.</p>
+        </div>
+        <div ng-if="currentOrders.length > 0">
+            <h3>Current Orders</h3>
+            <ul>
+                <li ng-repeat="order in currentOrders">
+                    {{ order.orderId }} - {{ order.date | date }} - {{ order.total | currency }}
+                </li>
+            </ul>
+        </div>
+        <a ng-click="logout()" class="text-center text-dark" style="cursor:pointer">
+            <i class="fas fa-sign-out-alt"></i>
+            Log Out
+        </a>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="js/currentOrders.js"></script>
+</body>
+</html>

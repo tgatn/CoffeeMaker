@@ -160,4 +160,43 @@ public class MappingController {
         return "signup";
     }
 
+    /**
+     * On a GET request to /customerIndex, the MakeCoffeeController will return
+     * /src/main/resources/templates/customerIndex.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/customerIndex", "/customerIndex.html" } )
+    public String customerIndex ( final Model model ) {
+        return "customerIndex";
+    }
+
+    /**
+     * On a GET request to /pastOrders, the MakeCoffeeController will return
+     * /src/main/resources/templates/pastOrders.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/pastOrders", "/pastOrders.html" } )
+    public String pastOrders ( final Model model ) {
+        return "pastOrders";
+    }
+
+    /**
+     * On a GET request to /currentOrders, the MakeCoffeeController will return
+     * /src/main/resources/templates/currentOrders.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/currentOrders", "/currentOrders.html" } )
+    public String currentOrders ( final Model model ) {
+        return "currentOrders";
+    }
+
 }

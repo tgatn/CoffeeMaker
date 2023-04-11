@@ -30,7 +30,7 @@ public class Order extends DomainObject {
     private List<Recipe> recipes;
 
     /** Cost of the order */
-    private int          totalCost;
+    private float        totalCost;
 
     /** Unique number that separates it from all other orders */
     private int          orderNumber;
@@ -125,7 +125,7 @@ public class Order extends DomainObject {
      *
      * @return the totalCost
      */
-    public int getTotalCost () {
+    public float getTotalCost () {
         return totalCost;
     }
 

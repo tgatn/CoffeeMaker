@@ -2,6 +2,10 @@ package edu.ncsu.csc.CoffeeMaker.controllers;
 
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +52,8 @@ public class APIUserController extends APIController {
      * @return response to the request
      */
     @PostMapping ( BASE_PATH + "/customer/login/{username}" )
-    public ResponseEntity customerLogin ( @PathVariable final String username, @RequestBody final String password ) {
+    public ResponseEntity customerLogin ( @PathVariable final String username, @RequestBody final String password,
+            final HttpServletResponse response, final HttpSession session ) {
         final RegisteredUser dbUser = service.findByName( username );
         if ( dbUser == null ) {
             return new ResponseEntity( errorResponse( "No User found with username " + username ),
@@ -64,7 +69,15 @@ public class APIUserController extends APIController {
             return new ResponseEntity( errorResponse( "Invalid password" ), HttpStatus.UNAUTHORIZED );
         }
 
+        session.setAttribute( "username", username );
+        final Cookie cookie = new Cookie( "username", username );
+        cookie.setMaxAge( 24 * 60 * 60 );
+        cookie.setDomain( "localhost" );
+        cookie.setPath( "/" );
+        response.addCookie( cookie );
+
         return new ResponseEntity( successResponse( username + " successfully logged in" ), HttpStatus.OK );
+
     }
 
     /**
@@ -165,6 +178,31 @@ public class APIUserController extends APIController {
         service.delete( user );
 
         return new ResponseEntity( successResponse( username + " was deleted successfully" ), HttpStatus.OK );
+    }
+
+    /**
+     * REST API method to provide logout functionality for users
+     *
+     * @param session
+     *            the current user's HttpSession
+     * @param response
+     *            the current HttpServletResponse
+     * @return response to the request
+     */
+    @PostMapping ( BASE_PATH + "/logout" )
+    public ResponseEntity logout ( final HttpSession session, final HttpServletResponse response ) {
+        // Invalidate the current session and remove the user's session
+        // attribute
+        session.invalidate();
+        session.removeAttribute( "username" );
+        // Clear the authentication cookie
+        final Cookie cookie = new Cookie( "username", "" );
+        cookie.setMaxAge( 0 );
+        cookie.setDomain( "localhost" );
+        cookie.setPath( "/" );
+        response.addCookie( cookie );
+
+        return new ResponseEntity( successResponse( "User successfully logged out" ), HttpStatus.OK );
     }
 
 }
