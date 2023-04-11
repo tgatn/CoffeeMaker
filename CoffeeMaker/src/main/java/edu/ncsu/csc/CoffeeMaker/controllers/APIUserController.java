@@ -193,8 +193,8 @@ public class APIUserController extends APIController {
     public ResponseEntity logout ( final HttpSession session, final HttpServletResponse response ) {
         // Invalidate the current session and remove the user's session
         // attribute
-        session.invalidate();
         session.removeAttribute( "username" );
+        session.invalidate();
         // Clear the authentication cookie
         final Cookie cookie = new Cookie( "username", "" );
         cookie.setMaxAge( 0 );
