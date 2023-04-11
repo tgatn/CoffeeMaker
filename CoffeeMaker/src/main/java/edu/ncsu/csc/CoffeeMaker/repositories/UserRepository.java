@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 
 /**
- * CustomerRepository is used to provide CRUD operations for the User model.
- * Spring will generate appropriate code with JPA.
+ * UserRepository is used to provide CRUD operations for the User model. Spring
+ * will generate appropriate code with JPA.
  *
  * @author Ben Abrams
  *

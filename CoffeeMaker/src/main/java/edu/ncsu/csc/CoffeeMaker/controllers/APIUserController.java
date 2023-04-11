@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.CoffeeMaker.models.Order;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.User;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
@@ -203,6 +204,32 @@ public class APIUserController extends APIController {
         response.addCookie( cookie );
 
         return new ResponseEntity( successResponse( "User successfully logged out" ), HttpStatus.OK );
+    }
+
+    /**
+     * REST API method to allow users to place an order.
+     *
+     * @param username
+     *            username of user in the data base.
+     * @param order
+     *            order being placed.
+     * @return response to the request
+     */
+    @PostMapping ( BASE_PATH + "/{username}/orders" )
+    public ResponseEntity placeOrder ( @PathVariable final String username, @RequestBody final Order order ) {
+        final RegisteredUser user = service.findByName( username );
+        // If user was not found return not found
+        if ( null == user ) {
+            return new ResponseEntity( errorResponse( "No Customer found for name " + username ),
+                    HttpStatus.NOT_FOUND );
+        }
+        // If user is not a customer return conflict
+        if ( user.getRole() != User.Role.CUSTOMER ) {
+            return new ResponseEntity( errorResponse( "No Customer found with username " + username ),
+                    HttpStatus.UNAUTHORIZED );
+        }
+
+        return null;
     }
 
 }
