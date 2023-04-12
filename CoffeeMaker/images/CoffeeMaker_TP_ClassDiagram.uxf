@@ -1,0 +1,268 @@
+<diagram program="umletino" version="15.1"><zoom_level>3</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLPackage</id><coordinates><x>711</x><y>372</y><w>87</w><h>45</h></coordinates><panel_attributes>edu.ncsu.csc.CoffeeMaker
+--
+bg=orange</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>729</x><y>384</y><w>57</w><h>24</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+Application
+--
+--
+_+main(args:String[]) : void_
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>522</x><y>126</y><w>330</w><h>147</h></coordinates><panel_attributes>edu.ncsu.csc.CoffeeMaker.controllers
+--
+bg=cyan</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>642</x><y>216</y><w>102</w><h>51</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+/APIController/
+--
+_#BASE_PATH : String_
+_-GSON : Gson_
+--
+_#toJson(obj:Object) : String_
+_#toJson(obj:Object, cls:Class&lt;JSONResponse&gt;) : String_
+_#responseMessage(status:String, message:String) : String_
+_#errorResponse(message:String) : String_
+_#successResponse(message:String) : String_</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>657</x><y>138</y><w>75</w><h>45</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+MappingController
+--
+--
++ index(model:Model) : String
++ makeCoffeeForm(model:Model) : String
++ staffLogin(model:Model) : String
++ customerLogin(model:Model) : String
++ login( model:Model ) : String
++ signUp( model:Model ):String
+
++recipeForm(model:Model) : String
++deleteRecipeForm(model:Model) : String
++editRecipeForm(model:Model) : String
++inventoryForm(model:Model) : String
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>525</x><y>183</y><w>105</w><h>39</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+APICoffeeController
+--
+-inventoryService : InventoryService
+-recipeService : RecipeService
+--
++makeCoffee(name:String, amtPaid:int) : ResponseEntity
+_+makeCoffee(toPurchase:Recipe, amtPaid:int) : int_</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>765</x><y>231</y><w>84</w><h>30</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+JSONResponse
+--
+#status : String
+#message : String
+--
++JSONResponse(status:String, message:String)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>741</x><y>243</y><w>30</w><h>15</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=0..1</panel_attributes><additional_attributes>10;30;80;10</additional_attributes></element><element><id>Relation</id><coordinates><x>627</x><y>189</y><w>30</w><h>33</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>80;90;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>741</x><y>198</y><w>30</w><h>42</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;120;80;10</additional_attributes></element><element><id>Relation</id><coordinates><x>720</x><y>159</y><w>36</w><h>63</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;190;100;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>264</x><y>132</y><w>252</w><h>282</h></coordinates><panel_attributes>edu.ncsu.csc.CoffeeMaker.models
+--
+bg=green</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>552</x><y>324</y><w>132</w><h>54</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+/Service/
+--
+--
+/#getRepository() : JpaRepository&lt;DomainObject, ? extends Object&gt;/
++save(obj: DomainObject) : void
++findAll() : List&lt;? extends DomainObject&gt;
++saveAll(objects: List&lt;? extends DomainObject&gt;): void
++delete(obj: DomainObject): void
++deleteAll(): void
++count(): long
+#findBy(example: Example&lt;DomainObject&gt;): List&lt;? extends DomainObject&gt;</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>426</x><y>306</y><w>87</w><h>102</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+Recipe
+--
+-id : Long
+-name : String
+-price : Integer
+--
++Recipe()
++getIngredients(): List&lt;Ingredient&gt;
++checkRecipe() : boolean
+-setId( id:Long ) : void
++getId() : long
++getPrice() : int
++setPrice( price: int ): void
++getName(): String
++setName( name:String ): void
++addIngredient( name:String, amt:int ) : boolean
++removeIngredient( name:String ) : boolean
++editIngredient( name:String, amt:int ) : boolean
++updateRecipe( r:Recipe ) : void
++toString() : String
++hashCode() : int
++equals(obj:Object) : boolean
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>267</x><y>279</y><w>84</w><h>48</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+Inventory
+--
+-id : Long
+--
++Inventory()
++checkIngredient(name:String) : int
++enoughIngredients(r:Recipe) : boolean
++useIngredients(r:Recipe) : boolean
++addIngredients(name:String, amt:int) : boolean
++toString() : String
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>348</x><y>261</y><w>39</w><h>33</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>110;10;10;90</additional_attributes></element><element><id>Relation</id><coordinates><x>399</x><y>264</y><w>33</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;90;180</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>522</x><y>276</y><w>183</w><h>141</h></coordinates><panel_attributes>edu.ncsu.csc.CoffeeMaker.services
+--
+bg=black</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>381</x><y>252</y><w>36</w><h>15</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+/DomainObject/
+--
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>531</x><y>285</y><w>81</w><h>30</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+InventoryService
+--
+-inventoryRepository: InventoryRepository
+--
+#getRepository(): JpaRepository
++getInventory(): Inventory</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>621</x><y>285</y><w>75</w><h>30</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+RecipeService
+--
+-recipeRepository: RecipeRepository
+--
+#getRepository(): JpaRepository
++findByName(name: String): Recipe</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>564</x><y>312</y><w>15</w><h>18</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>30;40;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>666</x><y>312</y><w>27</w><h>18</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;40;70;10</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>711</x><y>276</y><w>132</w><h>93</h></coordinates><panel_attributes>edu.ncsu.csc.CoffeeMaker.repositories
+--
+bg=red</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>723</x><y>348</y><w>111</w><h>15</h></coordinates><panel_attributes>&lt;&lt;Interface&gt;&gt;
+RecipeRepository extends JpaRepository&lt;Recipe, Long&gt;
+--
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>357</x><y>318</y><w>60</w><h>63</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+Ingredient
+--
+-id : Long
+-name : String
+-amount : int
+--
++Ingredient(): void
+-setId( id:long ) : void
++getId(): long
+-setName( name: String): void
++getName(): String
++setAmount( amt: int ): void
++getAmout(): int
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>384</x><y>264</y><w>36</w><h>60</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;100;180</additional_attributes></element><element><id>UMLClass</id><coordinates><x>531</x><y>384</y><w>81</w><h>30</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+IngredientService
+--
+-ingredientRepository: ingredientRepository
+--
+#getRepository(): JpaRepository
++findByName( name : String ): Ingredient</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>570</x><y>375</y><w>27</w><h>15</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>70;10;10;30</additional_attributes></element><element><id>UMLClass</id><coordinates><x>723</x><y>285</y><w>111</w><h>15</h></coordinates><panel_attributes>&lt;&lt;Interface&gt;&gt;
+IngredientRepository extends JpaRepository&lt;Ingredient, Long&gt;
+--
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>381</x><y>378</y><w>51</w><h>30</h></coordinates><panel_attributes>lt=&lt;-
+m1=1..*
+-ingredients
+</panel_attributes><additional_attributes>10;10;10;70;150;70</additional_attributes></element><element><id>Relation</id><coordinates><x>348</x><y>297</y><w>48</w><h>27</h></coordinates><panel_attributes>lt=&lt;-
+-ingredients
+m1=0..*</panel_attributes><additional_attributes>120;70;120;20;10;20</additional_attributes></element><element><id>UMLClass</id><coordinates><x>750</x><y>150</y><w>99</w><h>30</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+APIInventoryController
+--
+-inventoryService : InventoryService
+--
++getInventory() : ResponseEntity
++updateInventory(inventory:Inventory) : ResponseEntity
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>765</x><y>186</y><w>84</w><h>39</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+APIRecipeController
+--
+-recipeService : RecipeService
+--
++getRecipes() : List&lt;Recipe&gt;
++getRecipe(name:String) : ResponseEntity
++createRecipe(recipe:Recipe) : ResponseEntity
++deleteRecipe(name:String) : ResponseEntity</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>723</x><y>306</y><w>111</w><h>15</h></coordinates><panel_attributes>&lt;&lt;Interface&gt;&gt;
+InventoryRepository extends JpaRepository&lt;Inventory, Long&gt;
+--
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>525</x><y>228</y><w>105</w><h>39</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+APIIngredientController
+--
+-ingredientService : IngredientService
+--
++getIngredients() : List&lt;Ingredient&gt;
++getIngredient(name:String) : ResponseEntity
++createIngredient(ingredient: Ingredient) : ResponseEntity
++deleteIngredient(name:String) : ResponseEntity</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>627</x><y>252</y><w>21</w><h>12</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>50;20;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>201</y><w>39</w><h>21</h></coordinates><panel_attributes>/ &lt;&lt; Abstract Java Class&gt;&gt; /
+User
+
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>240</y><w>30</w><h>18</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>80;40;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>453</x><y>144</y><w>30</w><h>39</h></coordinates><panel_attributes>&lt;&lt; Enum&gt;&gt;
+Role
+--
+Customer
+Employee
+Manager
+Guest</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>408</x><y>162</y><w>51</w><h>45</h></coordinates><panel_attributes>lt=&lt;-
+-role
+m1=1</panel_attributes><additional_attributes>150;10;40;90;10;130</additional_attributes></element><element><id>UMLClass</id><coordinates><x>267</x><y>144</y><w>96</w><h>126</h></coordinates><panel_attributes>&lt;&lt; Java Class&gt;&gt;
+RegisteredUser
+--
+- id : Long
+- username : String
+- password : String
+- firstName : String
+- lastName : String
+--
++ RegiseredUser( username : String,
+                                password : String )
++ RegisteredUser( username:String, password:String,
+                                 firstname:String, lastname:String )
++ RegisteredUser()
+- setId( id : Long ) : void
++ getUsername() : String
++ getFirstName() : String
++ getLastName() : String
++ getRole() : Role
++ checkPassword( pass : String ) : boolean
++ setPassword ( pass : String ) : void
++ setUsername ( name : String ) :  void
++ setFirstName ( first : String ) : void
++ setLastName ( last : String ) : void
++ setRole( role : Role ): void
++ getRole() : Long
++ toString() : String</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>366</x><y>144</y><w>60</w><h>36</h></coordinates><panel_attributes>&lt;&lt; Java Class&gt;&gt;
+Guest
+--
+- name : String
+--
++ Guest(  name : String) : void
++ getName () : String
++ setName ( name : String ) : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>204</y><w>30</w><h>21</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>80;10;10;50</additional_attributes></element><element><id>Relation</id><coordinates><x>381</x><y>177</y><w>12</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>20;80;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>618</x><y>384</y><w>75</w><h>30</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+UserService
+--
+-userRepository: UserRepository
+--
+#getUsers(): JpaRepository
++findByName( name : String ): User</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>666</x><y>375</y><w>24</w><h>15</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>10;10;60;30</additional_attributes></element><element><id>UMLClass</id><coordinates><x>723</x><y>327</y><w>111</w><h>15</h></coordinates><panel_attributes>&lt;&lt;Interface&gt;&gt;
+UserRepository extends JpaRepository&lt;User, Long&gt;
+--
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>525</x><y>135</y><w>126</w><h>45</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+APIUserController
+--
+- service : UserService
+--
++ customerLogin( username:String, password:String ) : ResponseEntity
++ staffLogin(username:String, password:String ) : ResponseEntity
++ getUsers() : List&lt;RegisteredUser&gt;
++ getUser( username : String ) : ResponseEntity
++ createUser( user : RegisteredUser ) : ResponseEntity
++ deleteUser( username : String ) : ResponseEntity</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>642</x><y>177</y><w>42</w><h>45</h></coordinates><panel_attributes>lt=&lt;&lt;-</panel_attributes><additional_attributes>120;130;10;10</additional_attributes></element><element><id>UMLClass</id><coordinates><x>441</x><y>201</y><w>72</w><h>93</h></coordinates><panel_attributes>&lt;&lt;Java Class&gt;&gt;
+Order
+--
+- portNo : int
+- total : int
+--
++ Order( user : User , port : int ) : void
+- setUser ( user : User ) : void
++ getUser () : User
+
+- setPortNumber( port : int ) : void
++ getPortNumber() : int
+
++ addRecipe ( r : Recipe ) : void
++ removeRecipe ( r : Recipe ) : void
++ setAmount ( r : Recipe, amt : int ) : void
+
++ placeOrder() : void
++ fulfillOrder() : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>417</x><y>240</y><w>30</w><h>72</h></coordinates><panel_attributes>lt=&lt;-
+- recipes
+m1= 1 . . *</panel_attributes><additional_attributes>50;220;10;110;78;10</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>189</y><w>81</w><h>33</h></coordinates><panel_attributes>lt=&lt;-
+- customer
+m1= 1</panel_attributes><additional_attributes>10;90;60;10;248;40</additional_attributes></element><element><id>Relation</id><coordinates><x>357</x><y>225</y><w>87</w><h>15</h></coordinates><panel_attributes>lt=&lt;-
+- orderHistory
+m1= 0..*</panel_attributes><additional_attributes>280;20;18;20</additional_attributes></element></diagram>
