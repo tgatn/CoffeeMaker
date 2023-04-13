@@ -199,4 +199,17 @@ public class MappingController {
         return "currentOrders";
     }
 
+    /**
+     * On a GET request to /currentOrders, the MakeCoffeeController will return
+     * /src/main/resources/templates/currentOrders.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/placeOrders", "/placeOrders.html" } )
+    public String placeOrders ( final Model model ) {
+        return "placeOrders";
+    }
+
 }
