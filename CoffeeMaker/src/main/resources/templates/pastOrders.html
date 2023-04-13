@@ -12,6 +12,10 @@
 <body class="bg-dark">
     <div class="loginForm" id="customerLoginForm" ng-controller="myCtrl">
         <h1>CoffeeMaker</h1>
+        <div class="profile-div">
+			<i class="fas fa-solid fa-user fa-lg" id="profile-icon"></i>
+			<h4 ng-model="customerName">{{customerName}}</h4>
+		</div>
         <div ng-if="pastOrders.length === 0">
             <p>You have no past orders.</p>
         </div>
@@ -28,7 +32,9 @@
             Log Out
         </a>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.js"></script>
+    <script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-cookies.js"></script>
     <script src="js/pastOrders.js"></script>
 </body>
 </html>

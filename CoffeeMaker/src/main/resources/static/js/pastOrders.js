@@ -1,6 +1,7 @@
-var app = angular.module('myApp', []);
+var app = angular.module('myApp', ['ngCookies']);
 
-app.controller('myCtrl', function($scope, $http) {
+app.controller('myCtrl', function($scope, $http, $cookies) {
+	$scope.customerName = $cookies.get('username');
     $scope.pastOrders = [];
 
     $http.get('/pastOrders').then(function(response) {

@@ -1,7 +1,7 @@
-var app = angular.module('myApp', []);
+var app = angular.module('myApp', ['ngCookies']);
 
-app.controller('myCtrl', function($scope, $window, $http) {
-  
+app.controller('myCtrl', function($scope, $window, $http, $cookies) {
+  $scope.customerName = $cookies.get('username');
   $scope.viewPastOrders = () => {
     // api endpoint here
     
