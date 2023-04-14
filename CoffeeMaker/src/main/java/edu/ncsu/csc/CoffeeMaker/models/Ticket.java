@@ -15,7 +15,8 @@ import javax.persistence.OneToMany;
  * system. An Order extends the Domain Object class and stores a customer,
  * password, and recipes.
  *
- * @author ben
+ * @author Ben Abrams (bsabram2)
+ * @author Brandon Jiang (bjiang9)
  *
  */
 @Entity
@@ -24,33 +25,29 @@ public class Ticket extends DomainObject {
     /** Recipe id */
     @Id
     @GeneratedValue
-    private Long         id;
+    private Long           id;
 
     /** Cost of the order */
-    private float        totalCost;
+    private float          totalCost;
 
     /** Unique number that separates it from all other orders */
-    private int          orderNumber;
+    private int            orderNumber;
 
     /** Customer who placed the order */
-    private String       customerID;
+    private String         customerID;
 
     /** List of Recipes in the order */
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    private List<Recipe> recipes;
+    private List<MenuItem> cart;
 
     /** Boolean value to indicate if an order is complete */
-    private boolean      isComplete;
+    private boolean        isComplete;
 
     /**
      * Creates a default order for the coffee maker.
      */
     public Ticket () {
-        this.recipes = new ArrayList<Recipe>();
-        this.totalCost = 0;
-        this.orderNumber = 0;
-        this.customerID = null;
-        this.isComplete = false;
+        this( new ArrayList<MenuItem>(), 0, null, false );
     }
 
     /**
@@ -63,7 +60,7 @@ public class Ticket extends DomainObject {
      * @param customer
      *            order's customer
      */
-    public Ticket ( final List<Recipe> recipes, final int orderNumber, final String customer,
+    public Ticket ( final List<MenuItem> recipes, final int orderNumber, final String customer,
             final boolean isComplete ) {
         setRecipes( recipes );
         updateTotalCost();
@@ -78,8 +75,8 @@ public class Ticket extends DomainObject {
      * @return false if any ingredients are 0, otherwise return true
      */
     public boolean checkOrder () {
-        for ( final Recipe r : recipes ) {
-            if ( !r.checkRecipe() ) {
+        for ( final MenuItem m : cart ) {
+            if ( !m.getRecipe().checkRecipe() ) {
                 return false;
             }
         }
@@ -97,6 +94,14 @@ public class Ticket extends DomainObject {
     }
 
     /**
+     * When all the items on the Ticket have been made, change the status of the
+     * ticket to fulfilled
+     */
+    public void fulfill () {
+        this.isComplete = true;
+    }
+
+    /**
      * Sets the ticket status
      *
      * @param status
@@ -111,8 +116,8 @@ public class Ticket extends DomainObject {
      *
      * @return the recipes
      */
-    public List<Recipe> getRecipes () {
-        return recipes;
+    public List<MenuItem> getRecipes () {
+        return cart;
     }
 
     /**
@@ -121,8 +126,8 @@ public class Ticket extends DomainObject {
      * @param recipes
      *            the recipes to set
      */
-    private void setRecipes ( final List<Recipe> recipes ) {
-        this.recipes = recipes;
+    private void setRecipes ( final List<MenuItem> recipes ) {
+        this.cart = recipes;
     }
 
     /**
@@ -132,18 +137,51 @@ public class Ticket extends DomainObject {
      *            given recipe to be added
      */
     public void addRecipe ( final Recipe recipe ) {
-        recipes.add( recipe );
+        // Iterate over all items in the cart
+        for ( final MenuItem m : cart ) {
+            // If the recipe is already in the cart
+            if ( recipe.getName().equals( m.getRecipe().getName() ) ) {
+                // Increment the count and break
+                m.setAmount( m.getAmount() + 1 );
+                return;
+            }
+        }
+        // If the recipe is not in the cart, add to cart with count 1
+        cart.add( new MenuItem( recipe ) );
     }
 
     /**
-     * Removes the given recipe from the order
+     * Decrements the recipe in the cart if the recipe is in the cart
+     *
+     * If decrementing causes the count to be nonpositive, the entry for the
+     * recipe is removed from the ticket
      *
      * @param recipe
      *            given recipe to be removed
      * @return true if the recipe was removed false otherwise
      */
     public boolean removeRecipe ( final Recipe recipe ) {
-        return recipes.remove( recipe );
+        // Iterate over the cart to find the recipe
+        for ( int i = 0; i < cart.size(); i++ ) {
+            // Name of recipe in cart
+            final String current = cart.get( i ).getRecipe().getName();
+
+            // If the recipe is found, decrement
+            if ( current.equals( recipe.getName() ) ) {
+                final MenuItem m = cart.get( i );
+                try {
+                    m.setAmount( m.getAmount() );
+                }
+                catch ( final IllegalArgumentException e ) {
+                    cart.remove( i );
+                }
+                updateTotalCost();
+                return true;
+            }
+
+        }
+
+        return false;
     }
 
     /**
@@ -159,9 +197,11 @@ public class Ticket extends DomainObject {
      * Updates total cost.
      */
     private void updateTotalCost () {
-        for ( final Recipe recipe : recipes ) {
-            this.totalCost += recipe.getPrice();
+        int total = 0;
+        for ( final MenuItem m : cart ) {
+            total += ( m.getAmount() * m.getRecipe().getPrice() );
         }
+        totalCost = total;
     }
 
     /**
