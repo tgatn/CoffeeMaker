@@ -5,20 +5,20 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.ncsu.csc.CoffeeMaker.TestConfig;
 import edu.ncsu.csc.CoffeeMaker.models.MenuItem;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.services.MenuItemService;
+import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 
 /**
  * Test that the MenuItem object behaves as expected
@@ -34,6 +34,9 @@ public class MenuItemTest {
     @Autowired
     private MenuItemService service;
 
+    @Autowired
+    private RecipeService   rService;
+
     @BeforeEach
     public void setup () {
         service.deleteAll();
@@ -47,12 +50,15 @@ public class MenuItemTest {
         // ==============================================================================================
         final Recipe r1 = new Recipe();
         r1.setName( "Coffee" );
+        rService.save( r1 );
 
         final Recipe r2 = new Recipe();
         r2.setName( "Tea" );
+        rService.save( r2 );
 
         final Recipe r3 = new Recipe();
         r3.setName( "Cookie" );
+        rService.save( r3 );
 
         // ==============================================================================================
         // Create Menu Item

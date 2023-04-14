@@ -1,6 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
@@ -24,7 +25,7 @@ public class MenuItem extends DomainObject {
     private Long    id;
 
     /** The recipe to count */
-    @OneToOne
+    @OneToOne ( fetch = FetchType.EAGER )
     private Recipe  recipe;
 
     /** The count of the recipe */
