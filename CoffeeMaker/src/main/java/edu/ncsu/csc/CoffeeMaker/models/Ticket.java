@@ -28,7 +28,7 @@ public class Ticket extends DomainObject {
     private Long           id;
 
     /** Cost of the order */
-    private float          totalCost;
+    private int            totalCost;
 
     /** Unique number that separates it from all other orders */
     private int            orderNumber;
@@ -116,7 +116,7 @@ public class Ticket extends DomainObject {
      *
      * @return the recipes
      */
-    public List<MenuItem> getRecipes () {
+    public List<MenuItem> getCart () {
         return cart;
     }
 
@@ -143,11 +143,13 @@ public class Ticket extends DomainObject {
             if ( recipe.getName().equals( m.getRecipe().getName() ) ) {
                 // Increment the count and break
                 m.setAmount( m.getAmount() + 1 );
+                updateTotalCost();
                 return;
             }
         }
         // If the recipe is not in the cart, add to cart with count 1
         cart.add( new MenuItem( recipe ) );
+        updateTotalCost();
     }
 
     /**
@@ -189,7 +191,7 @@ public class Ticket extends DomainObject {
      *
      * @return the totalCost
      */
-    public float getTotalCost () {
+    public int getTotalCost () {
         return totalCost;
     }
 
