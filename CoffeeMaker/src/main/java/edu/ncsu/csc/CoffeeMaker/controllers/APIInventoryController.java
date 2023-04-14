@@ -81,9 +81,9 @@ public class APIInventoryController extends APIController {
     public ResponseEntity updateInventory ( @RequestBody final Ingredient ingredient ) {
         final Inventory inventoryCurrent = service.getInventory();
 
-        inventoryCurrent.addIngredient( ingredient.getIngredient(), ingredient.getAmount() );
-
-        service.save( inventoryCurrent );
+        if ( inventoryCurrent.addIngredient( ingredient.getIngredient(), ingredient.getAmount() ) ) {
+            service.save( inventoryCurrent );
+        }
         return new ResponseEntity( inventoryCurrent, HttpStatus.OK );
     }
 
