@@ -1,14 +1,15 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 /**
  * Order class represents an order placed by a customer in the Coffee Maker
@@ -18,34 +19,38 @@ import javax.persistence.OneToMany;
  * @author ben
  *
  */
-public class Order extends DomainObject {
+@Entity
+public class Ticket extends DomainObject {
 
     /** Recipe id */
     @Id
     @GeneratedValue
-    private Long         id;
+    private Long           id;
+
+    /** Cost of the order */
+    private float          totalCost;
+
+    /** Unique number that separates it from all other orders */
+    private int            orderNumber;
+
+    /** Customer who placed the order */
+    private String         customerID;
+
+    @OneToOne
+    private RegisteredUser customer;
 
     /** List of Recipes in the order */
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    private List<Recipe> recipes;
-
-    /** Cost of the order */
-    private float        totalCost;
-
-    /** Unique number that separates it from all other orders */
-    private int          orderNumber;
-
-    /** Customer who placed the order */
-    private User         customer;
+    private List<Recipe>   recipes;
 
     /**
      * Creates a default order for the coffee maker.
      */
-    public Order () {
+    public Ticket () {
         this.recipes = new ArrayList<Recipe>();
         this.totalCost = 0;
         this.orderNumber = 0;
-        this.customer = null;
+        this.customerID = null;
     }
 
     /**
@@ -58,7 +63,7 @@ public class Order extends DomainObject {
      * @param customer
      *            order's customer
      */
-    public Order ( final List<Recipe> recipes, final int orderNumber, final User customer ) {
+    public Ticket ( final List<Recipe> recipes, final int orderNumber, final String customer ) {
         setRecipes( recipes );
         updateTotalCost();
         setOrderNumber( orderNumber );
@@ -162,8 +167,8 @@ public class Order extends DomainObject {
      *
      * @return the customer
      */
-    public User getCustomer () {
-        return customer;
+    public String getCustomer () {
+        return customerID;
     }
 
     /**
@@ -172,13 +177,24 @@ public class Order extends DomainObject {
      * @param customer
      *            the customer to set
      */
-    private void setCustomer ( final User customer ) {
-        this.customer = customer;
+    private void setCustomer ( final String customer ) {
+        this.customerID = customer;
     }
 
     @Override
-    public Serializable getId () {
+    public Long getId () {
         return id;
+    }
+
+    /**
+     * Set the ID of the Recipe (Used by Hibernate)
+     *
+     * @param id
+     *            the ID
+     */
+    @SuppressWarnings ( "unused" )
+    private void setId ( final Long id ) {
+        this.id = id;
     }
 
 }
