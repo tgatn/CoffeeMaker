@@ -93,7 +93,8 @@ public class MenuItem extends DomainObject {
      */
     private void setRecipe ( final Recipe recipe ) {
         if ( recipe == null ) {
-            return;
+            throw new IllegalArgumentException( "Recipe cannot be null." );
+            // TODO
         }
         this.recipe = recipe;
     }
@@ -116,7 +117,8 @@ public class MenuItem extends DomainObject {
      */
     public void setAmount ( final Integer amount ) {
         if ( amount <= 0 ) {
-            return;
+            throw new IllegalArgumentException( "Amount must be positive." );
+            // TODO
         }
         this.amount = amount;
     }

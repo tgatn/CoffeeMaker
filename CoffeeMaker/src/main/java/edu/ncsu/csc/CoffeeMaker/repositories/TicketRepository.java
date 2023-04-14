@@ -5,21 +5,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 
 /**
- * RecipeRepository is used to provide CRUD operations for the Recipe model.
+ * RecipeRepository is used to provide CRUD operations for the Ticket model.
  * Spring will generate appropriate code with JPA.
  *
- * @author Kai Presler-Marshall
+ * @author Brandon Jiang (bjiang9)
  *
  */
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     /**
-     * Finds a Recipe object with the provided name. Spring will generate code
-     * to make this happen.
+     * Finds a Ticket object with the provided order number. Spring will
+     * generate code to make this happen.
      *
-     * @param name
-     *            Name of the recipe
-     * @return Found recipe, null if none.
+     * @param orderNumber
+     *            order number of the ticket
+     * @return Found ticket, null if none.
      */
     Ticket findByOrderNumber ( int orderNumber );
 
