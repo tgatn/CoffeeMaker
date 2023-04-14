@@ -9,7 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 /**
  * Order class represents an order placed by a customer in the Coffee Maker
@@ -25,23 +24,23 @@ public class Ticket extends DomainObject {
     /** Recipe id */
     @Id
     @GeneratedValue
-    private Long           id;
+    private Long         id;
 
     /** Cost of the order */
-    private float          totalCost;
+    private float        totalCost;
 
     /** Unique number that separates it from all other orders */
-    private int            orderNumber;
+    private int          orderNumber;
 
     /** Customer who placed the order */
-    private String         customerID;
-
-    @OneToOne
-    private RegisteredUser customer;
+    private String       customerID;
 
     /** List of Recipes in the order */
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    private List<Recipe>   recipes;
+    private List<Recipe> recipes;
+
+    /** Boolean value to indicate if an order is complete */
+    private boolean      isComplete;
 
     /**
      * Creates a default order for the coffee maker.
@@ -51,6 +50,7 @@ public class Ticket extends DomainObject {
         this.totalCost = 0;
         this.orderNumber = 0;
         this.customerID = null;
+        this.isComplete = false;
     }
 
     /**
@@ -63,11 +63,13 @@ public class Ticket extends DomainObject {
      * @param customer
      *            order's customer
      */
-    public Ticket ( final List<Recipe> recipes, final int orderNumber, final String customer ) {
+    public Ticket ( final List<Recipe> recipes, final int orderNumber, final String customer,
+            final boolean isComplete ) {
         setRecipes( recipes );
         updateTotalCost();
         setOrderNumber( orderNumber );
         setCustomer( customer );
+        setTicketStatus( isComplete );
     }
 
     /**
@@ -83,6 +85,25 @@ public class Ticket extends DomainObject {
         }
 
         return true;
+    }
+
+    /**
+     * Returns the field isComplete
+     *
+     * @return true if ticket is complete; false otherwise
+     */
+    public boolean isComplete () {
+        return this.isComplete;
+    }
+
+    /**
+     * Sets the ticket status
+     *
+     * @param status
+     *            is true if ticket is complete and false if not
+     */
+    private void setTicketStatus ( final boolean status ) {
+        this.isComplete = status;
     }
 
     /**
