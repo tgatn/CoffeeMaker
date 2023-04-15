@@ -198,7 +198,7 @@ public class Ticket extends DomainObject {
     /**
      * Updates total cost.
      */
-    private void updateTotalCost () {
+    public void updateTotalCost () {
         int total = 0;
         for ( final MenuItem m : cart ) {
             total += ( m.getAmount() * m.getRecipe().getPrice() );

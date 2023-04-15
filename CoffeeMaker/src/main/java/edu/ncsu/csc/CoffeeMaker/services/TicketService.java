@@ -10,11 +10,12 @@ import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 import edu.ncsu.csc.CoffeeMaker.repositories.TicketRepository;
 
 /**
- * The RecipeService is used to handle CRUD operations on the Recipe model. In
+ * The TicketService is used to handle CRUD operations on the Ticket model. In
  * addition to all functionality from `Service`, we also have functionality for
- * retrieving a single Recipe by name.
+ * retrieving a single Ticket by number.
  *
- * @author Kai Presler-Marshall
+ * @author Ben Abrams
+ * @author Brandon
  *
  */
 @Component
@@ -22,26 +23,26 @@ import edu.ncsu.csc.CoffeeMaker.repositories.TicketRepository;
 public class TicketService extends Service<Ticket, Long> {
 
     /**
-     * RecipeRepository, to be autowired in by Spring and provide CRUD
+     * TicketRepository, to be autowired in by Spring and provide CRUD
      * operations on Recipe model.
      */
     @Autowired
-    private TicketRepository orderRepository;
+    private TicketRepository ticketRepository;
 
     @Override
     protected JpaRepository<Ticket, Long> getRepository () {
-        return orderRepository;
+        return ticketRepository;
     }
 
     /**
-     * Find a recipe with the provided name
+     * Find a Ticket with the provided number
      *
-     * @param name
-     *            Name of the recipe to find
-     * @return found recipe, null if none
+     * @param orderNumber
+     *            number of the ticket to find
+     * @return found ticket, null if none
      */
-    public Ticket findByName ( final int id ) {
-        return orderRepository.findByOrderNumber( id );
+    public Ticket findByOrderNumber ( final int orderNumber ) {
+        return ticketRepository.findByOrderNumber( orderNumber );
     }
 
 }
