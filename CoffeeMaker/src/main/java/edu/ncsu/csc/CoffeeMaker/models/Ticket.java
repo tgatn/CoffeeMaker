@@ -50,6 +50,10 @@ public class Ticket extends DomainObject {
         this( new ArrayList<MenuItem>(), 0, null, false );
     }
 
+    public Ticket ( final String customer ) {
+        this( new ArrayList<MenuItem>(), 0, customer, false );
+    }
+
     /**
      * Creates an order from the given parameters.
      *

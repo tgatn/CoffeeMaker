@@ -62,6 +62,7 @@ public class RegisteredUser extends User {
     /**
      * Creates a user with the given parameters.
      *
+     *
      * @param first
      *            users first name
      * @param last
@@ -80,19 +81,21 @@ public class RegisteredUser extends User {
         this.setUsername( user );
         this.setPassword( pass );
         setRole( role );
-        this.orders = new ArrayList<Ticket>();
+
+        // Only customer will have their order history tracked
+        if ( role == Role.CUSTOMER ) {
+            this.orders = new ArrayList<Ticket>();
+        }
+        else {
+            this.orders = null;
+        }
     }
 
     /**
      * Creates a default user for the coffee maker.
      */
     public RegisteredUser () {
-        this.username = "";
-        this.password = "";
-        this.firstName = "";
-        this.lastName = "";
-        this.role = null;
-        this.orders = new ArrayList<Ticket>();
+        this( "", "", "", "", null );
     }
 
     /**
@@ -231,6 +234,21 @@ public class RegisteredUser extends User {
         }
 
         return false;
+    }
+
+    /**
+     * Get a list of all orders waiting to be fulfilled.
+     *
+     * @return the list of orders waiting to be fulfilled.
+     */
+    public List<Ticket> getPendingOrders () {
+        final List<Ticket> pending = new ArrayList<Ticket>();
+        for ( final Ticket t : orders ) {
+            if ( !t.isComplete() ) {
+                pending.add( t );
+            }
+        }
+        return pending;
     }
 
     /**
