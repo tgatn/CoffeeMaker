@@ -30,8 +30,8 @@ public class Ticket extends DomainObject {
     /** Cost of the order */
     private int            totalCost;
 
-    /** Unique number that separates it from all other orders */
-    private int            orderNumber;
+    // /** Unique number that separates it from all other orders */
+    // private int orderNumber;
 
     /** Customer who placed the order */
     private String         customerID;
@@ -47,11 +47,11 @@ public class Ticket extends DomainObject {
      * Creates a default order for the coffee maker.
      */
     public Ticket () {
-        this( new ArrayList<MenuItem>(), 0, null, false );
+        this( new ArrayList<MenuItem>(), null, false );
     }
 
     public Ticket ( final String customer ) {
-        this( new ArrayList<MenuItem>(), 0, customer, false );
+        this( new ArrayList<MenuItem>(), customer, false );
     }
 
     /**
@@ -59,16 +59,12 @@ public class Ticket extends DomainObject {
      *
      * @param recipes
      *            list of recipes
-     * @param orderNumber
-     *            unique order number
      * @param customer
      *            order's customer
      */
-    public Ticket ( final List<MenuItem> recipes, final int orderNumber, final String customer,
-            final boolean isComplete ) {
+    public Ticket ( final List<MenuItem> recipes, final String customer, final boolean isComplete ) {
         setRecipes( recipes );
         updateTotalCost();
-        setOrderNumber( orderNumber );
         setCustomer( customer );
         setTicketStatus( isComplete );
     }
@@ -208,25 +204,6 @@ public class Ticket extends DomainObject {
             total += ( m.getAmount() * m.getRecipe().getPrice() );
         }
         totalCost = total;
-    }
-
-    /**
-     * Orders unique number.
-     *
-     * @return the orderNumber
-     */
-    public int getOrderNumber () {
-        return orderNumber;
-    }
-
-    /**
-     * Sets order number.
-     *
-     * @param orderNumber
-     *            the orderNumber to set
-     */
-    private void setOrderNumber ( final int orderNumber ) {
-        this.orderNumber = orderNumber;
     }
 
     /**

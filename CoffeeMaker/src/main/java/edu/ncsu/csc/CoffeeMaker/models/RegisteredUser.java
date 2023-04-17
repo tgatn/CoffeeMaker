@@ -227,7 +227,7 @@ public class RegisteredUser extends User {
             return false;
         }
         for ( int i = 0; i < orders.size(); i++ ) {
-            if ( orders.get( i ).getOrderNumber() == order.getOrderNumber() ) {
+            if ( orders.get( i ).getId() == order.getId() ) {
                 orders.get( i ).fulfill();
                 return true;
             }

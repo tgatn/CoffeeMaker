@@ -102,9 +102,9 @@ public class APICoffeeController extends APIController {
      * @return The change the customer is due if successful
      */
     @PostMapping ( BASE_PATH + "/makecoffee/orders/{orderNumber}" )
-    public ResponseEntity fulfillTicket ( @PathVariable ( "orderNumber" ) final int orderNumber,
+    public ResponseEntity fulfillTicket ( @PathVariable ( "orderNumber" ) final long orderNumber,
             @RequestBody final int amtPaid ) {
-        final Ticket ticket = ticketService.findByOrderNumber( orderNumber );
+        final Ticket ticket = ticketService.findById( orderNumber );
         // check if the ticket was null or already completed
         if ( ticket == null || ticket.isComplete() ) {
             return new ResponseEntity( errorResponse( "Invalid order number" ), HttpStatus.NOT_FOUND );

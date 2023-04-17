@@ -36,7 +36,6 @@ public class TicketTest {
     public void defaultConstructor () {
         final Ticket t1 = new Ticket();
         assertEquals( 0, t1.getTotalCost() );
-        assertEquals( 0, t1.getOrderNumber() );
 
     }
 

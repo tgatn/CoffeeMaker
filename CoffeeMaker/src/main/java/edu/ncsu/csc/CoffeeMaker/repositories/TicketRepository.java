@@ -13,14 +13,4 @@ import edu.ncsu.csc.CoffeeMaker.models.Ticket;
  */
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    /**
-     * Finds a Ticket object with the provided order number. Spring will
-     * generate code to make this happen.
-     *
-     * @param orderNumber
-     *            order number of the ticket
-     * @return Found ticket, null if none.
-     */
-    Ticket findByOrderNumber ( int orderNumber );
-
 }

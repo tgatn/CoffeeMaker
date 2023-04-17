@@ -120,8 +120,8 @@ public class APITicketController extends APIController {
             return new ResponseEntity( errorResponse( "Invalid Order" ), HttpStatus.CONFLICT );
         }
         // check if the order number is already stored
-        if ( order.getOrderNumber() != 0 && null != service.findByOrderNumber( order.getOrderNumber() ) ) {
-            return new ResponseEntity( errorResponse( "Order number " + order.getOrderNumber() + " already exists" ),
+        if ( order.getId() != 0 && null != service.findById( order.getId() ) ) {
+            return new ResponseEntity( errorResponse( "Order number " + order.getId() + " already exists" ),
                     HttpStatus.CONFLICT );
         }
         // check if the username is valid
@@ -182,8 +182,8 @@ public class APITicketController extends APIController {
      * @return response to the request
      */
     @GetMapping ( BASE_PATH + "/orders/{orderNumber}" )
-    public ResponseEntity getTicket ( @PathVariable ( "orderNumber" ) final int orderNumber ) {
-        final Ticket order = service.findByOrderNumber( orderNumber );
+    public ResponseEntity getTicket ( @PathVariable ( "orderNumber" ) final long orderNumber ) {
+        final Ticket order = service.findById( orderNumber );
         return null == order
                 ? new ResponseEntity( errorResponse( "No Order found with order Number " + orderNumber ),
                         HttpStatus.NOT_FOUND )

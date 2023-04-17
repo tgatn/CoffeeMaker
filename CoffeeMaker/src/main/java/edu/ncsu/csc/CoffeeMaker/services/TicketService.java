@@ -34,15 +34,4 @@ public class TicketService extends Service<Ticket, Long> {
         return ticketRepository;
     }
 
-    /**
-     * Find a Ticket with the provided number
-     *
-     * @param orderNumber
-     *            number of the ticket to find
-     * @return found ticket, null if none
-     */
-    public Ticket findByOrderNumber ( final int orderNumber ) {
-        return ticketRepository.findByOrderNumber( orderNumber );
-    }
-
 }
