@@ -58,11 +58,10 @@ app.controller('myCtrl', function($scope, $http, $cookies) {
 	$scope.customerName = $cookies.get('username');
     $scope.pastOrders = [];
     
-    $http.get('api/v1/pastOrders').then(function(response) {
-        $scope.currentOrders = response.data;
+    $http.get('api/v1/orders/complete').then(function(response) {
+        $scope.pastOrders = response.data;
     });
     
-    $scope.pastOrders = orders;
     
 
     $scope.logout = function() {
