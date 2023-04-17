@@ -33,6 +33,7 @@ import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 import edu.ncsu.csc.CoffeeMaker.models.User.Role;
+import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 import edu.ncsu.csc.CoffeeMaker.services.TicketService;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
@@ -54,6 +55,8 @@ public class APITicketTest {
     private TicketService         service;
     @Autowired
     private UserService           userService;
+    @Autowired
+    private RecipeService         recipeService;
 
     /**
      * Sets up the tests.
@@ -93,8 +96,10 @@ public class APITicketTest {
 
         assertEquals( 1, userService.count() );
 
-        // make an order
+        // make an order and add to data base
         final Recipe r1 = createRecipe( "Coffee", 1, 1, 1, 1, 1 );
+        recipeService.save( r1 );
+
         final ArrayList<MenuItem> recipeList = new ArrayList<MenuItem>();
         final Ticket t1 = new Ticket( recipeList, "customer1", false, 7832 );
         t1.addRecipe( r1 );
@@ -116,7 +121,7 @@ public class APITicketTest {
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer1 ) ) );
 
-        assertEquals( 1, service.count() );
+        assertEquals( 1, userService.count() );
 
         // make second customer
         final RegisteredUser customer2 = createUser( "customer2", "password2", "first2", "last2", Role.CUSTOMER );
@@ -124,7 +129,7 @@ public class APITicketTest {
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer2 ) ) ).andExpect( status().isOk() );
 
-        assertEquals( 2, service.count() );
+        assertEquals( 2, userService.count() );
 
         // get specific customer
         final String customers = mvc
@@ -163,7 +168,7 @@ public class APITicketTest {
         // delete first customer
         mvc.perform( delete( "/api/v1/users/customer1" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
-        assertEquals( 1, service.count() );
+        assertEquals( 1, userService.count() );
         final String customers3 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andReturn().getResponse().getContentAsString();
         assertFalse( customers3.contains( "customer1" ) );
