@@ -126,7 +126,7 @@ public class APITicketController extends APIController {
         }
         // check if the username is valid
         final RegisteredUser u = userService.findByName( order.getCustomer() );
-        if ( u == null || u.getRole() != User.Role.CUSTOMER ) {
+        if ( u == null || u.getRole() != User.Role.CUSTOMER || u.getRole() != User.Role.GUEST ) {
             return new ResponseEntity( errorResponse( "Invalid user" ), HttpStatus.NOT_ACCEPTABLE );
         }
         // make sure the list of recipes is greater than 0
