@@ -34,7 +34,7 @@ public class Ticket extends DomainObject {
     // private int orderNumber;
 
     /** Customer who placed the order */
-    private String         customerID;
+    private String         customer;
 
     /** List of Recipes in the order */
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
@@ -47,11 +47,14 @@ public class Ticket extends DomainObject {
      * Creates a default order for the coffee maker.
      */
     public Ticket () {
-        this( new ArrayList<MenuItem>(), null, false );
+        this.cart = new ArrayList<MenuItem>();
+        this.customer = "default";
+        this.isComplete = false;
+        this.totalCost = 0;
     }
 
     public Ticket ( final String customer ) {
-        this( new ArrayList<MenuItem>(), customer, false );
+        this( new ArrayList<MenuItem>(), customer, false, 0 );
     }
 
     /**
@@ -62,11 +65,12 @@ public class Ticket extends DomainObject {
      * @param customer
      *            order's customer
      */
-    public Ticket ( final List<MenuItem> recipes, final String customer, final boolean isComplete ) {
+    public Ticket ( final List<MenuItem> recipes, final String customer, final boolean isComplete, final long id ) {
         setRecipes( recipes );
         updateTotalCost();
         setCustomer( customer );
         setTicketStatus( isComplete );
+        this.id = id;
     }
 
     /**
@@ -212,7 +216,7 @@ public class Ticket extends DomainObject {
      * @return the customer
      */
     public String getCustomer () {
-        return customerID;
+        return customer;
     }
 
     /**
@@ -222,7 +226,7 @@ public class Ticket extends DomainObject {
      *            the customer to set
      */
     private void setCustomer ( final String customer ) {
-        this.customerID = customer;
+        this.customer = customer;
     }
 
     @Override

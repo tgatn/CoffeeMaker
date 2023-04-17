@@ -26,26 +26,26 @@ public class RegisteredUser extends User {
     /** User id */
     @Id
     @GeneratedValue
-    private Long               id;
+    private Long         id;
 
     /** User name of the Registered User */
-    private String             username;
+    private String       username;
 
     /** Password of the Registered User */
-    private String             password;
+    private String       password;
 
     /** The user's first name */
-    private String             firstName;
+    private String       firstName;
 
     /** The user's last name */
-    private String             lastName;
+    private String       lastName;
 
     /** User role */
-    private Role               role;
+    private Role         role;
 
     /** list of current orders */
     @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
-    private final List<Ticket> orders;
+    private List<Ticket> orders;
 
     /**
      * Constructs a RegisteredUser using the given user name and password.
@@ -96,6 +96,7 @@ public class RegisteredUser extends User {
      */
     public RegisteredUser () {
         this( "", "", "", "", null );
+        this.orders = new ArrayList<Ticket>();
     }
 
     /**

@@ -31,6 +31,11 @@ public class MenuItem extends DomainObject {
     /** The count of the recipe */
     private Integer amount;
 
+    public MenuItem () {
+        this.recipe = new Recipe();
+        this.amount = 0;
+    }
+
     /**
      * Create a new MenuItem with the given recipe and count
      *

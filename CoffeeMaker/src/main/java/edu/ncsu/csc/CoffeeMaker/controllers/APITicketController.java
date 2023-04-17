@@ -114,7 +114,11 @@ public class APITicketController extends APIController {
      *         the database, or an error if it could not be
      */
     @PostMapping ( BASE_PATH + "/orders" )
-    public ResponseEntity createTicket ( @RequestBody final Ticket order, @RequestBody final int amtPaid ) {
+    public ResponseEntity createTicket ( @RequestBody final Ticket order ) {
+        System.out.println( "======================" + order.getTotalCost() );
+        System.out.println( "======================" + order.getCustomer() );
+        System.out.println( "======================" + order.getId() );
+
         // make sure the order isn't null
         if ( order == null || order.isComplete() ) {
             return new ResponseEntity( errorResponse( "Invalid Order" ), HttpStatus.CONFLICT );
@@ -126,7 +130,7 @@ public class APITicketController extends APIController {
         }
         // check if the username is valid
         final RegisteredUser u = userService.findByName( order.getCustomer() );
-        if ( u == null || u.getRole() != User.Role.CUSTOMER || u.getRole() != User.Role.GUEST ) {
+        if ( u == null || u.getRole() == User.Role.MANAGER || u.getRole() == User.Role.EMPLOYEE ) {
             return new ResponseEntity( errorResponse( "Invalid user" ), HttpStatus.NOT_ACCEPTABLE );
         }
         // make sure the list of recipes is greater than 0
@@ -152,25 +156,28 @@ public class APITicketController extends APIController {
                 inventory.useIngredients( r.getRecipe() );
             }
         }
-
+        System.out.println( "===========" + order.getTotalCost() );
         // make sure the cost is up to date
         order.updateTotalCost();
+        System.out.println( "===========" + order.getTotalCost() );
 
         // make sure the customer paid enough money
-        int change = 0;
-        if ( amtPaid < order.getTotalCost() ) {
-            return new ResponseEntity( errorResponse( amtPaid + " is not enough money for the order" ),
-                    HttpStatus.NOT_ACCEPTABLE );
-        }
-        else {
-            change = amtPaid - order.getTotalCost();
-        }
+        // int change = 0;
+        // if ( amtPaid < order.getTotalCost() ) {
+        // return new ResponseEntity( errorResponse( amtPaid + " is not enough
+        // money for the order" ),
+        // HttpStatus.NOT_ACCEPTABLE );
+        // }
+        // else {
+        // change = amtPaid - order.getTotalCost();
+        // }
 
         // Add the valid order to the users list
+        System.out.println( "=============" + u.getUsername() );
         u.addOrder( order );
         userService.save( u );
 
-        return new ResponseEntity( change, HttpStatus.OK );
+        return new ResponseEntity( HttpStatus.OK );
     }
 
     /**
@@ -188,5 +195,22 @@ public class APITicketController extends APIController {
                 ? new ResponseEntity( errorResponse( "No Order found with order Number " + orderNumber ),
                         HttpStatus.NOT_FOUND )
                 : new ResponseEntity( order, HttpStatus.OK );
+    }
+
+    /**
+     * Gets the all orders in the data base that are not complete
+     *
+     * @return ResponseEntity indicating success with the list of orders
+     */
+    @GetMapping ( BASE_PATH + "/orders" )
+    public ResponseEntity getAllTicket () {
+        final List<Ticket> list = service.findAll();
+        for ( final Ticket t : list ) {
+            if ( t.isComplete() ) {
+                list.remove( t );
+            }
+        }
+
+        return new ResponseEntity( list, HttpStatus.OK );
     }
 }

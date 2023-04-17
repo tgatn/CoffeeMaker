@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
 
 import javax.transaction.Transactional;
 
@@ -24,14 +27,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
+import edu.ncsu.csc.CoffeeMaker.models.Inventory;
+import edu.ncsu.csc.CoffeeMaker.models.MenuItem;
+import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
+import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 import edu.ncsu.csc.CoffeeMaker.models.User.Role;
+import edu.ncsu.csc.CoffeeMaker.services.TicketService;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 @ExtendWith ( SpringExtension.class )
 @SpringBootTest
 @AutoConfigureMockMvc
-public class APIUserTest {
+public class APITicketTest {
 
     /**
      * MockMvc uses Spring's testing framework to handle requests to the REST
@@ -43,7 +51,9 @@ public class APIUserTest {
     private WebApplicationContext context;
 
     @Autowired
-    private UserService           service;
+    private TicketService         service;
+    @Autowired
+    private UserService           userService;
 
     /**
      * Sets up the tests.
@@ -53,16 +63,55 @@ public class APIUserTest {
         mvc = MockMvcBuilders.webAppContextSetup( context ).build();
 
         service.deleteAll();
+        userService.deleteAll();
     }
 
     @Test
     @Transactional
-    public void testCustomer () throws Exception {
-        // ensure there are no customers to begin with
-        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Customers in the CoffeeMaker" );
+    public void testAPITicket () throws Exception {
+        // ensure there are no tickets to begin with
+        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Tickets in the CoffeeMaker" );
+
+        // populate the inventory
+        final Inventory i = new Inventory();
+        i.addIngredient( "Coffee" );
+        i.updateIngredient( "Coffee", 50 );
+        i.addIngredient( "Milk" );
+        i.updateIngredient( "Milk", 50 );
+        i.addIngredient( "Chocolate" );
+        i.updateIngredient( "Chocolate", 50 );
+        i.addIngredient( "Sugar" );
+        i.updateIngredient( "sugar", 50 );
+        mvc.perform( put( "/api/v1/inventory" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( i ) ) ).andExpect( status().isOk() );
+
+        // make a customer
+        final RegisteredUser customer1 = createUser( "customer1", "password1", "first1", "last1", Role.CUSTOMER );
+
+        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( customer1 ) ) );
+
+        assertEquals( 1, userService.count() );
+
+        // make an order
+        final Recipe r1 = createRecipe( "Coffee", 1, 1, 1, 1, 1 );
+        final ArrayList<MenuItem> recipeList = new ArrayList<MenuItem>();
+        final Ticket t1 = new Ticket( recipeList, "customer1", false, 7832 );
+        t1.addRecipe( r1 );
+        assertEquals( 7832, t1.getId() );
+        assertEquals( "customer1", t1.getCustomer() );
+
+        mvc.perform( post( "/api/v1/orders" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( t1 ) ) ).andExpect( status().isOk() );
+
+        final String orders = mvc.perform( get( "/api/v1/orders" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
+
+        assertEquals( 1, service.count() );
+        assertTrue( orders.contains( "Coffee" ) );
 
         // make first Customer
-        final RegisteredUser customer1 = createUser( "customer1", "password1", "first1", "last1", Role.CUSTOMER );
+        final RegisteredUser njdksa = createUser( "customer1", "password1", "first1", "last1", Role.CUSTOMER );
 
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer1 ) ) );
@@ -128,77 +177,21 @@ public class APIUserTest {
 
     }
 
-    @Test
-    @Transactional
-    public void testStaff () throws Exception {
-        // ensure there are no staffs to begin with
-        Assertions.assertEquals( 0, service.findAll().size(), "There should be no Staff in the CoffeeMaker" );
+    private Recipe createRecipe ( final String name, final Integer price, final Integer coffee, final Integer milk,
+            final Integer sugar, final Integer chocolate ) {
+        final Recipe recipe = new Recipe();
+        recipe.setName( name );
+        recipe.setPrice( price );
+        recipe.addIngredient( "Coffee" );
+        recipe.editIngredient( "Coffee", coffee );
+        recipe.addIngredient( "Milk" );
+        recipe.editIngredient( "Milk", milk );
+        recipe.addIngredient( "Sugar" );
+        recipe.editIngredient( "Sugar", sugar );
+        recipe.addIngredient( "Chocolate" );
+        recipe.editIngredient( "Chocolate", chocolate );
 
-        // make first Staff
-        final RegisteredUser staff1 = createUser( "staff1", "password1", "first1", "last1", Role.EMPLOYEE );
-
-        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( staff1 ) ) );
-
-        assertEquals( 1, service.count() );
-
-        // make second Staff
-        final RegisteredUser staff2 = createUser( "staff2", "password2", "first2", "last2", Role.EMPLOYEE );
-
-        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( staff2 ) ) );
-
-        assertEquals( 2, service.count() );
-
-        // get specific Staff
-        final String staffs = mvc.perform( get( "/api/v1/users/staff2" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andReturn().getResponse().getContentAsString();
-
-        assertTrue( staffs.contains( "staff2" ) );
-
-        // get null staff
-        mvc.perform( get( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isNotFound() );
-
-        // get all staff
-        final String staffs2 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andReturn().getResponse().getContentAsString();
-
-        // check passwords
-        // check valid password
-        mvc.perform(
-                post( "/api/v1/staff/login/staff2" ).contentType( MediaType.APPLICATION_JSON ).content( "password2" ) )
-                .andExpect( status().isOk() );
-        // check invalid password
-        mvc.perform(
-                post( "/api/v1/staff/login/staff2" ).contentType( MediaType.APPLICATION_JSON ).content( "password1" ) )
-                .andExpect( status().isUnauthorized() );
-        // check invalid username
-        mvc.perform(
-                post( "/api/v1/staff/login/random" ).contentType( MediaType.APPLICATION_JSON ).content( "password1" ) )
-                .andExpect( status().isNotFound() );
-        // check staff login
-        mvc.perform( post( "/api/v1/customer/login/staff2" ).contentType( MediaType.APPLICATION_JSON )
-                .content( "password2" ) ).andExpect( status().isUnauthorized() );
-
-        assertTrue( staffs2.contains( "staff1" ) );
-        assertTrue( staffs2.contains( "staff2" ) );
-
-        // delete first staff
-        mvc.perform( delete( "/api/v1/users/staff1" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isOk() );
-        assertEquals( 1, service.count() );
-        final String staffs3 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andReturn().getResponse().getContentAsString();
-        assertFalse( staffs3.contains( "staff1" ) );
-        assertTrue( staffs3.contains( "staff2" ) );
-
-        // delete null staff
-        mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isNotFound() );
-
-        service.deleteAll();
-
+        return recipe;
     }
 
     private RegisteredUser createUser ( final String username, final String password, final String first,
