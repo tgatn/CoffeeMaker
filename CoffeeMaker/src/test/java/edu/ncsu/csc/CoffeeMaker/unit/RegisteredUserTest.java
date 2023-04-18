@@ -327,6 +327,7 @@ public class RegisteredUserTest {
 
         dbT = list.get( 0 );
         order = dbT.getCart();
+        assertEquals( 3, order.size() );
         for ( final MenuItem m : order ) {
             final String recipe = m.getRecipe().getName();
             switch ( recipe ) {
@@ -351,6 +352,172 @@ public class RegisteredUserTest {
         final RegisteredUser manager = new RegisteredUser( "manager", "manager", "manager", "pass", Role.MANAGER );
         uService.save( manager );
         assertEquals( 1, uService.count() );
+    }
+
+    @Test
+    @Transactional
+    public void testFindTicketByUserName () {
+        // ========================================================================================
+        // Make Customers
+        // ========================================================================================
+        final RegisteredUser u1 = new RegisteredUser( "John", "Doe", "jdoe", "pass", Role.CUSTOMER );
+        final RegisteredUser u2 = new RegisteredUser( "Mary", "Jane", "mjane", "pass", Role.CUSTOMER );
+        final RegisteredUser u3 = new RegisteredUser( "Mary", "Sue", "msue", "pass", Role.CUSTOMER );
+        uService.save( u1 );
+        uService.save( u2 );
+        uService.save( u3 );
+
+        // ========================================================================================
+        // Make Recipes
+        // ========================================================================================
+        final Recipe coffee = makeRecipe( "Coffee", 1, 1, 1 );
+        rService.save( coffee );
+
+        final Recipe tea = makeRecipe( "Tea", 2, 2, 2 );
+        rService.save( tea );
+
+        final Recipe cookie = makeRecipe( "Cookie", 3, 3, 3 );
+        rService.save( cookie );
+
+        // ========================================================================================
+        // Make Tickets for (Customer 1)
+        // ========================================================================================
+        final Ticket t1A = new Ticket( u1.getUsername() );
+        t1A.addRecipe( coffee );
+        t1A.fulfill();
+        tService.save( t1A );
+
+        final Ticket t1B = new Ticket( u1.getUsername() );
+        t1B.addRecipe( tea );
+        tService.save( t1B );
+
+        final Ticket t1C = new Ticket( u1.getUsername() );
+        t1C.addRecipe( cookie );
+        tService.save( t1C );
+
+        // ========================================================================================
+        // Make Tickets for (Customer 2)
+        // ========================================================================================
+        final Ticket t2A = new Ticket( u2.getUsername() );
+        t2A.addRecipe( coffee );
+        t2A.addRecipe( coffee );
+        tService.save( t2A );
+
+        final Ticket t2B = new Ticket( u2.getUsername() );
+        t2B.addRecipe( tea );
+        t2B.addRecipe( tea );
+        t2B.fulfill();
+        tService.save( t2B );
+
+        final Ticket t2C = new Ticket( u2.getUsername() );
+        t2C.addRecipe( cookie );
+        t2C.addRecipe( cookie );
+        tService.save( t2C );
+
+        // ========================================================================================
+        // Make Tickets for (Customer 3)
+        // ========================================================================================
+        final Ticket t3A = new Ticket( u3.getUsername() );
+        t3A.addRecipe( coffee );
+        t3A.addRecipe( coffee );
+        t3A.addRecipe( coffee );
+        tService.save( t3A );
+
+        final Ticket t3B = new Ticket( u3.getUsername() );
+        t3B.addRecipe( tea );
+        t3B.addRecipe( tea );
+        t3B.addRecipe( tea );
+        tService.save( t3B );
+
+        final Ticket t3C = new Ticket( u3.getUsername() );
+        t3C.addRecipe( cookie );
+        t3C.addRecipe( cookie );
+        t3C.addRecipe( cookie );
+        t3C.fulfill();
+        tService.save( t3C );
+
+        // ========================================================================================
+        // Test findAllByUsername (Customer 1)
+        // ========================================================================================
+        List<Ticket> list = tService.findAllByUsername( "jdoe" );
+        assertEquals( 3, list.size() );
+        for ( final Ticket t : list ) {
+            final List<MenuItem> cart = t.getCart();
+            assertEquals( 1, cart.size() );
+            final MenuItem item = cart.get( 0 );
+            final String rName = item.getRecipe().getName();
+
+            switch ( rName ) {
+                case "Coffee":
+                    assertEquals( 1, item.getAmount() );
+                    assertTrue( t.isComplete() );
+                    break;
+                case "Tea":
+                    assertEquals( 1, item.getAmount() );
+                    break;
+                case "Cookie":
+                    assertEquals( 1, item.getAmount() );
+                    break;
+                default:
+                    fail( "Unknown MenuItem found." );
+            }
+        }
+
+        // ========================================================================================
+        // Test findAllByUsername (Customer 2)
+        // ========================================================================================
+        list = tService.findAllByUsername( "mjane" );
+        assertEquals( 3, list.size() );
+        for ( final Ticket t : list ) {
+            final List<MenuItem> cart = t.getCart();
+            assertEquals( 1, cart.size() );
+            final MenuItem item = cart.get( 0 );
+            final String rName = item.getRecipe().getName();
+
+            switch ( rName ) {
+                case "Coffee":
+                    assertEquals( 2, item.getAmount() );
+                    break;
+                case "Tea":
+                    assertEquals( 2, item.getAmount() );
+                    assertTrue( t.isComplete() );
+                    break;
+                case "Cookie":
+                    assertEquals( 2, item.getAmount() );
+                    break;
+                default:
+                    fail( "Unknown MenuItem found." );
+            }
+        }
+
+        // ========================================================================================
+        // Test findAllByUsername (Customer 3)
+        // ========================================================================================
+        list = tService.findAllByUsername( "msue" );
+        assertEquals( 3, list.size() );
+        for ( final Ticket t : list ) {
+            final List<MenuItem> cart = t.getCart();
+            assertEquals( 1, cart.size() );
+            final MenuItem item = cart.get( 0 );
+            final String rName = item.getRecipe().getName();
+
+            switch ( rName ) {
+                case "Coffee":
+                    assertEquals( 3, item.getAmount() );
+                    break;
+                case "Tea":
+                    assertEquals( 3, item.getAmount() );
+
+                    break;
+                case "Cookie":
+                    assertEquals( 3, item.getAmount() );
+                    assertTrue( t.isComplete() );
+                    break;
+                default:
+                    fail( "Unknown MenuItem found." );
+            }
+        }
+
     }
 
     /**
