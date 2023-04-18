@@ -102,6 +102,25 @@ public class APITicketController extends APIController {
     }
 
     /**
+     * Gets the pending orders in the data base
+     *
+     * @return ResponseEntity indicating success with the list of completed
+     *         orders
+     */
+    @GetMapping ( BASE_PATH + "/orders/pending" )
+    public ResponseEntity getPendingOrders () {
+        final List<Ticket> list = service.findAll();
+        final Iterator<Ticket> iterator = list.iterator();
+        while ( iterator.hasNext() ) {
+            final Ticket t = iterator.next();
+            if ( t.isComplete() ) {
+                iterator.remove();
+            }
+        }
+        return new ResponseEntity( list, HttpStatus.OK );
+    }
+
+    /**
      * Gets the completed orders for a specific user in the data base
      *
      * @param username
@@ -249,12 +268,32 @@ public class APITicketController extends APIController {
     @GetMapping ( BASE_PATH + "/orders" )
     public ResponseEntity getAllTicket () {
         final List<Ticket> list = service.findAll();
-        for ( final Ticket t : list ) {
-            if ( t.isComplete() ) {
-                list.remove( t );
-            }
+        return new ResponseEntity( list, HttpStatus.OK );
+    }
+
+    /**
+     * REST API method to mark a ticket as complete.
+     *
+     * @param id
+     *            The id of the ticket to be marked as complete.
+     * @return ResponseEntity indicating success if the ticket could be marked
+     *         as complete, or an error if it could not be
+     */
+    @PostMapping ( BASE_PATH + "/orders/{id}/complete" )
+    public ResponseEntity fulfillOrder ( @PathVariable final int id ) {
+        // Find the ticket with the given id
+        final Ticket ticket = service.findById( Long.valueOf( id ) );
+
+        // If the ticket was not found, return an error response
+        if ( ticket == null ) {
+            return new ResponseEntity( errorResponse( "Ticket with id " + id + " not found." ), HttpStatus.NOT_FOUND );
         }
 
-        return new ResponseEntity( list, HttpStatus.OK );
+        // Mark the ticket as complete
+        ticket.fulfill();
+        service.save( ticket );
+
+        return new ResponseEntity( successResponse( "Ticket with id " + id + " has been marked as complete." ),
+                HttpStatus.OK );
     }
 }

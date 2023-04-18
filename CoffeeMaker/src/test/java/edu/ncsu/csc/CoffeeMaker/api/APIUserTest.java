@@ -197,7 +197,7 @@ public class APIUserTest {
         mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
-        service.deleteAll();
+        // service.deleteAll();
 
     }
 

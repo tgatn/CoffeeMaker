@@ -91,7 +91,8 @@ public class APIUserController extends APIController {
      * @return response to the request
      */
     @PostMapping ( BASE_PATH + "/staff/login/{username}" )
-    public ResponseEntity staffLogin ( @PathVariable final String username, @RequestBody final String password ) {
+    public ResponseEntity staffLogin ( @PathVariable final String username, @RequestBody final String password,
+            final HttpServletResponse response, final HttpSession session ) {
         final RegisteredUser dbUser = service.findByName( username );
         if ( dbUser == null ) {
             return new ResponseEntity( errorResponse( "No User found with username " + username ),
@@ -105,6 +106,13 @@ public class APIUserController extends APIController {
         if ( !dbUser.checkPassword( password ) ) {
             return new ResponseEntity( errorResponse( "Invalid password" ), HttpStatus.UNAUTHORIZED );
         }
+
+        session.setAttribute( "username", username );
+        final Cookie cookie = new Cookie( "username", username );
+        cookie.setMaxAge( 24 * 60 * 60 );
+        cookie.setDomain( "localhost" );
+        cookie.setPath( "/" );
+        response.addCookie( cookie );
 
         return new ResponseEntity( successResponse( username + " successfully logged in" ), HttpStatus.OK );
     }

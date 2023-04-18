@@ -212,4 +212,30 @@ public class MappingController {
         return "placeOrders";
     }
 
+    /**
+     * On a GET request to /staffIndex, the MakeCoffeeController will return
+     * /src/main/resources/templates/staffIndex.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/staffIndex", "/staffIndex.html" } )
+    public String staffIndex ( final Model model ) {
+        return "staffIndex";
+    }
+
+    /**
+     * On a GET request to /viewOrders, the MakeCoffeeController will return
+     * /src/main/resources/templates/viewOrders.html.
+     *
+     * @param model
+     *            underlying UI model
+     * @return contents of the page
+     */
+    @GetMapping ( { "/viewOrders", "/viewOrders.html" } )
+    public String viewOrders ( final Model model ) {
+        return "viewOrders";
+    }
+
 }

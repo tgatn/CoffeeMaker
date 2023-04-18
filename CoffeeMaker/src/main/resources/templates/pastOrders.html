@@ -27,27 +27,27 @@
     <div ng-if="pastOrders.length > 0" style="max-height: 300px; overflow:scroll">
       <h3 style="text-align: center">Past Orders</h3>
       <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Order ID</th>
-            <th>Order</th>
-            <th>Order Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="order in pastOrders">
-            <td>{{ order.date | date }}</td>
-            <td>{{ order.orderId }}</td>
-            <td>
-              <ul>
-                <li ng-repeat="item in order.items">{{ item.name }} x {{ item.quantity }}</li>
-              </ul>
-            </td>
-            <td>{{ order.orderStatus }}</td>
-          </tr>
-        </tbody>
-      </table>
+				<thead>
+					<tr>
+						<th>Order ID</th>
+						<th>Total Cost</th>
+						<th>Cart</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="order in pastOrders">
+						<td>{{ order.id }}</td>
+						<td>{{ order.totalCost }}</td>
+						<td>
+							<ul>
+								<li ng-repeat="item in order.cart">{{ item.recipe.name }} x {{
+									item.amount }}</li>
+							</ul>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
     </div>
     <a ng-click="logout()" class="text-center text-dark" style="cursor:pointer">
       <i class="fas fa-sign-out-alt"></i>
