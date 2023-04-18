@@ -287,7 +287,12 @@ public class RegisteredUserTest {
                     fail( "Unknown MenuItem found" );
             }
         }
-        t1.fulfill();
+
+        // ========================================================================================
+        // Fulfill the first order
+        // ========================================================================================
+        dbT.fulfill();
+        tService.save( dbT );
 
         // ========================================================================================
         // Add a second ticket to check for sorting
@@ -300,30 +305,18 @@ public class RegisteredUserTest {
         tService.save( t2 );
         cust.addOrder( t2 );
         uService.save( cust );
-        order = dbT.getCart();
-        for ( final MenuItem m : order ) {
-            final String recipe = m.getRecipe().getName();
-            switch ( recipe ) {
-                case "Coffee":
-                    assertEquals( 2, m.getAmount() );
-                    break;
-                case "Cookie":
-                    assertEquals( 2, m.getAmount() );
-                    break;
-                default:
-                    fail( "Unknown MenuItem found" );
-            }
-        }
 
         // ========================================================================================
         // Retrieve Customer from the database to check for correct save
         // ========================================================================================
+        assertEquals( 4, uService.findAll().size() );
+
         dbCust = uService.findByName( cust.getUsername() );
         list = dbCust.getOrders();
         assertEquals( 2, list.size() );
 
         list = dbCust.getPendingOrders();
-        assertEquals( 2, list.size() );
+        assertEquals( 1, list.size() );
 
         dbT = list.get( 0 );
         order = dbT.getCart();
@@ -332,10 +325,10 @@ public class RegisteredUserTest {
             final String recipe = m.getRecipe().getName();
             switch ( recipe ) {
                 case "Coffee":
-                    assertEquals( 2, m.getAmount() );
+                    assertEquals( 1, m.getAmount() );
                     break;
                 case "Cookie":
-                    assertEquals( 2, m.getAmount() );
+                    assertEquals( 1, m.getAmount() );
                     break;
                 case "Tea":
                     assertEquals( 1, m.getAmount() );
@@ -347,6 +340,7 @@ public class RegisteredUserTest {
     }
 
     @Test
+    @Transactional
     public void testManager () {
         final RegisteredUser manager = new RegisteredUser( "manager", "manager", "manager", "pass", Role.MANAGER );
         uService.save( manager );
