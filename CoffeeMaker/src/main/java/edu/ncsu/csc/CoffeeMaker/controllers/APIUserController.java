@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.User;
+import edu.ncsu.csc.CoffeeMaker.models.User.Role;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 /**
@@ -114,7 +115,7 @@ public class APIUserController extends APIController {
         cookie.setPath( "/" );
         response.addCookie( cookie );
 
-        return new ResponseEntity( successResponse( username + " successfully logged in" ), HttpStatus.OK );
+        return new ResponseEntity( dbUser.getRole(), HttpStatus.OK );
     }
 
     /**
@@ -163,6 +164,29 @@ public class APIUserController extends APIController {
             service.save( user );
             return new ResponseEntity( successResponse( user.getUsername() + " successfully created" ), HttpStatus.OK );
         }
+
+    }
+
+    /**
+     * REST API method to provide POST access to the User guest model. This is
+     * used to create a new guest User by automatically converting the JSON
+     * RequestBody provided to a User object. Invalid JSON will fail.
+     *
+     * @return ResponseEntity indicating success if the User could be saved to
+     *         the database, or an error if it could not be
+     */
+    @PostMapping ( BASE_PATH + "/users/guest" )
+    public ResponseEntity createGuestUser () {
+        if ( null != service.findByName( "TEMP GUEST" ) ) {
+            return new ResponseEntity( errorResponse( "Could not create guest" ), HttpStatus.CONFLICT );
+        }
+        RegisteredUser user = new RegisteredUser();
+        user.setRole( Role.GUEST );
+        user.setUsername( "TEMP GUEST" );
+        service.save( user );
+        user = service.findByName( "TEMP GUEST" );
+        user.setUsername( "Guest" + user.getId() );
+        return new ResponseEntity( successResponse( user.getUsername() + " successfully created" ), HttpStatus.OK );
 
     }
 
