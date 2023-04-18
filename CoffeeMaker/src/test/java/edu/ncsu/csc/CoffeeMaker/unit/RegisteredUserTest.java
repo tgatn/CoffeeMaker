@@ -345,6 +345,14 @@ public class RegisteredUserTest {
         }
     }
 
+    @Test
+    @Transactional
+    public void testManager () {
+        final RegisteredUser manager = new RegisteredUser( "manager", "manager", "manager", "pass", Role.MANAGER );
+        uService.save( manager );
+        assertEquals( 1, uService.count() );
+    }
+
     /**
      * Make a recipe with the given name, price, and quantities of 2 ingredients
      *
