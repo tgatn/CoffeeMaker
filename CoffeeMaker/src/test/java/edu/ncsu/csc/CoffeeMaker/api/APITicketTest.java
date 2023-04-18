@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
@@ -68,6 +69,7 @@ public class APITicketTest {
     }
 
     @Test
+    @Transactional
     public void testAPITicket () throws Exception {
         // ensure there are no tickets to begin with
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Tickets in the CoffeeMaker" );
