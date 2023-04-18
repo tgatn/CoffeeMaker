@@ -102,8 +102,7 @@ public class APICoffeeController extends APIController {
      * @return The change the customer is due if successful
      */
     @PostMapping ( BASE_PATH + "/makecoffee/orders/{orderNumber}" )
-    public ResponseEntity fulfillTicket ( @PathVariable ( "orderNumber" ) final long orderNumber,
-            @RequestBody final int amtPaid ) {
+    public ResponseEntity fulfillTicket ( @PathVariable ( "orderNumber" ) final long orderNumber ) {
         final Ticket ticket = ticketService.findById( orderNumber );
         // check if the ticket was null or already completed
         if ( ticket == null || ticket.isComplete() ) {
@@ -121,16 +120,13 @@ public class APICoffeeController extends APIController {
             }
         }
 
-        // save the inventory
-        inventoryService.save( inventory );
-        // complete the ticket and save
-        ticket.fulfill();
-        ticketService.save( ticket );
-
         // move the ticket into the users past orders table
         final RegisteredUser u = userService.findByName( ticket.getCustomer() );
         u.completeOrder( ticket );
         userService.save( u );
+
+        // save the inventory
+        inventoryService.save( inventory );
 
         return new ResponseEntity( HttpStatus.OK );
     }
