@@ -58,11 +58,10 @@ app.controller('myCtrl', function($scope, $http, $cookies) {
 	$scope.customerName = $cookies.get('username');
     $scope.currentOrders = [];
     
-    $http.get('api/v1/currentOrders').then(function(response) {
+    $http.get(`api/v1/orders/${$scope.customerName}/pending`).then(function(response) {
         $scope.currentOrders = response.data;
     });
     
-    $scope.currentOrders = orders;
     
 
     $scope.logout = function() {

@@ -18,14 +18,15 @@
 <body class="bg-dark">
 	<div class="loginForm" id="placeOrderForm" ng-controller="myCtrl">
 		<h1>CoffeeMaker</h1>
+		<div ng-show="showMessage"
+			ng-class="{'success-message': messageType == 'success', 'error-message': messageType == 'error'}">{{message}}</div>
 		<div class="profile-div">
 			<i class="fas fa-solid fa-user fa-lg" id="profile-icon"></i>
 			<h4 ng-model="customerName">{{customerName}}</h4>
 		</div>
 		<form>
 			<div class="form-group">
-				<label for="drinkSelection">Select a drink:</label> 
-				<select
+				<label for="drinkSelection">Select a drink:</label> <select
 					class="form-control" id="drinkSelection" ng-model="selectedDrink"
 					ng-change="updatePrice()">
 					<option value="" disabled selected hidden>Select a drink</option>
@@ -34,8 +35,7 @@
 				</select>
 			</div>
 			<div class="form-group">
-				<label for="quantity">Quantity:</label> 
-				<input type="number"
+				<label for="quantity">Quantity:</label> <input type="number"
 					class="form-control" id="quantity" ng-model="quantity" min="1"
 					ng-change="updatePrice()" required>
 			</div>

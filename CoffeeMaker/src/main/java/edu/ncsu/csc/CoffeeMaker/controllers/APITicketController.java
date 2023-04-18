@@ -1,5 +1,6 @@
 package edu.ncsu.csc.CoffeeMaker.controllers;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import edu.ncsu.csc.CoffeeMaker.models.Inventory;
-import edu.ncsu.csc.CoffeeMaker.models.MenuItem;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 import edu.ncsu.csc.CoffeeMaker.models.User;
@@ -92,12 +91,55 @@ public class APITicketController extends APIController {
     @GetMapping ( BASE_PATH + "/orders/complete" )
     public ResponseEntity getCompleteOrders () {
         final List<Ticket> list = service.findAll();
-        for ( final Ticket t : list ) {
+        final Iterator<Ticket> iterator = list.iterator();
+        while ( iterator.hasNext() ) {
+            final Ticket t = iterator.next();
             if ( !t.isComplete() ) {
-                list.remove( t );
+                iterator.remove();
             }
         }
+        return new ResponseEntity( list, HttpStatus.OK );
+    }
 
+    /**
+     * Gets the completed orders for a specific user in the data base
+     *
+     * @param username
+     *            the username for which to retrieve completed orders
+     * @return ResponseEntity indicating success with the list of completed
+     *         orders for the user
+     */
+    @GetMapping ( BASE_PATH + "/orders/{username}/pending" )
+    public ResponseEntity getPendingOrdersByUsername ( @PathVariable final String username ) {
+        final List<Ticket> list = service.findAllByUsername( username );
+        final Iterator<Ticket> iterator = list.iterator();
+        while ( iterator.hasNext() ) {
+            final Ticket t = iterator.next();
+            if ( t.isComplete() ) {
+                iterator.remove();
+            }
+        }
+        return new ResponseEntity( list, HttpStatus.OK );
+    }
+
+    /**
+     * Gets the completed orders for a specific user in the data base
+     *
+     * @param username
+     *            the username for which to retrieve completed orders
+     * @return ResponseEntity indicating success with the list of completed
+     *         orders for the user
+     */
+    @GetMapping ( BASE_PATH + "/orders/{username}/complete" )
+    public ResponseEntity getCompleteOrdersByUsername ( @PathVariable final String username ) {
+        final List<Ticket> list = service.findAllByUsername( username );
+        final Iterator<Ticket> iterator = list.iterator();
+        while ( iterator.hasNext() ) {
+            final Ticket t = iterator.next();
+            if ( !t.isComplete() ) {
+                iterator.remove();
+            }
+        }
         return new ResponseEntity( list, HttpStatus.OK );
     }
 
@@ -124,10 +166,12 @@ public class APITicketController extends APIController {
             return new ResponseEntity( errorResponse( "Invalid Order" ), HttpStatus.CONFLICT );
         }
         // check if the order number is already stored
-        if ( order.getId() != 0 && null != service.findById( order.getId() ) ) {
-            return new ResponseEntity( errorResponse( "Order number " + order.getId() + " already exists" ),
-                    HttpStatus.CONFLICT );
-        }
+        // if ( order.getId() != 0 && null != service.findById( order.getId() )
+        // ) {
+        // return new ResponseEntity( errorResponse( "Order number " +
+        // order.getId() + " already exists" ),
+        // HttpStatus.CONFLICT );
+        // }
         // check if the username is valid
         final RegisteredUser u = userService.findByName( order.getCustomer() );
         if ( u == null || u.getRole() == User.Role.MANAGER || u.getRole() == User.Role.EMPLOYEE ) {
@@ -146,19 +190,20 @@ public class APITicketController extends APIController {
 
         // make sure inventory has enough ingredients and
         // deduct ingredients from inventory
-        final Inventory inventory = inventoryService.getInventory();
-        for ( final MenuItem r : order.getCart() ) {
-            for ( int i = 0; i < r.getAmount(); i++ ) {
-                if ( !inventory.enoughIngredients( r.getRecipe() ) ) {
-                    return new ResponseEntity( errorResponse( "Not enough ingredients in inventory" ),
-                            HttpStatus.CONFLICT );
-                }
-                inventory.useIngredients( r.getRecipe() );
-            }
-        }
+        // final Inventory inventory = inventoryService.getInventory();
+        // for ( final MenuItem r : order.getCart() ) {
+        // for ( int i = 0; i < r.getAmount(); i++ ) {
+        // if ( !inventory.enoughIngredients( r.getRecipe() ) ) {
+        // return new ResponseEntity( errorResponse( "Not enough ingredients in
+        // inventory" ),
+        // HttpStatus.CONFLICT );
+        // }
+        // inventory.useIngredients( r.getRecipe() );
+        // }
+        // }
         System.out.println( "===========" + order.getTotalCost() );
         // make sure the cost is up to date
-        order.updateTotalCost();
+        // order.updateTotalCost();
         System.out.println( "===========" + order.getTotalCost() );
 
         // make sure the customer paid enough money
@@ -176,7 +221,6 @@ public class APITicketController extends APIController {
         System.out.println( "=============" + u.getUsername() );
         u.addOrder( order );
         userService.save( u );
-
         return new ResponseEntity( HttpStatus.OK );
     }
 

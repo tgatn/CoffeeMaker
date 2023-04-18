@@ -1,5 +1,8 @@
 package edu.ncsu.csc.CoffeeMaker.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,19 @@ public class TicketService extends Service<Ticket, Long> {
     @Override
     protected JpaRepository<Ticket, Long> getRepository () {
         return ticketRepository;
+    }
+
+    public List<Ticket> findAllByUsername ( final String username ) {
+        final List<Ticket> allTickets = findAll();
+        final List<Ticket> userTickets = new ArrayList<>();
+
+        for ( final Ticket ticket : allTickets ) {
+            if ( ticket.getCustomer().equals( username ) ) {
+                userTickets.add( ticket );
+            }
+        }
+
+        return userTickets;
     }
 
 }

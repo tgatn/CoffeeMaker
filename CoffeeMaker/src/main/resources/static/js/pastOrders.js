@@ -58,7 +58,7 @@ app.controller('myCtrl', function($scope, $http, $cookies) {
 	$scope.customerName = $cookies.get('username');
     $scope.pastOrders = [];
     
-    $http.get('api/v1/orders/complete').then(function(response) {
+    $http.get(`api/v1/orders/${$scope.customerName}/complete`).then(function(response) {
         $scope.pastOrders = response.data;
     });
     

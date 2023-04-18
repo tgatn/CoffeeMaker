@@ -107,3 +107,16 @@
   font-size: 12px !important;
   }
   
+  .success-message {
+  	display: flex;
+  	justify-content: center;
+  	color: green;
+    background-color: lightgreen;
+}
+
+.error-message {
+	display: flex;
+  	justify-content: center;
+  	color: white;
+    background-color: lightcoral;
+}

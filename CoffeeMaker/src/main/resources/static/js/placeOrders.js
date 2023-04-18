@@ -1,6 +1,6 @@
 var app = angular.module('myApp', ['ngCookies']);
 
-app.controller('myCtrl', function($scope, $window, $http, $cookies) {
+app.controller('myCtrl', function($scope, $window, $http, $cookies, $sce) {
 	$scope.customerName = $cookies.get('username');
 	$scope.selectedDrink = null;
 
@@ -17,22 +17,40 @@ app.controller('myCtrl', function($scope, $window, $http, $cookies) {
 		}
 	};
 
+	$scope.showMessage = false;
+	$scope.message = '';
+	$scope.messageType = '';
 	$scope.placeOrder = function() {
-		$http.post('/api/v1/orders', {
-			customerid: $scope.customerName,
-			is_complete: false,
-			total_cost: $scope.totalPrice
-		}).then(function(response) {
-			console.log(response.data);
+		console.log('Place order button clicked');
+		$http.get(`/api/v1/recipes/${angular.fromJson($scope.selectedDrink).name}`).then(function(response) {
+			const recipe = response.data;
+			const cart = [{
+				recipe: recipe,
+				amount: $scope.quantity
+			}];
+			$http.post('/api/v1/orders', {
+				totalCost: $scope.totalPrice,
+				customer: $scope.customerName,
+				cart: cart,
+				isComplete: false,
+			}).then(function(response) {
+				$scope.message = 'Order placed successfully!';
+				$scope.messageType = 'success';
+				$scope.showMessage = true;
+			}, function(error) {
+				$scope.message = 'Order could not be placed.';
+				$scope.messageType = 'error';
+				$scope.showMessage = true;
+			});
 		}, function(error) {
-			console.error(error);
-		})
+			$scope.message = 'Order could not be placed.';
+			$scope.messageType = 'error';
+			$scope.showMessage = true;
+		});
 	};
 	$scope.logout = function() {
 		$http.post('api/v1/logout').then(function(response) {
 			window.location.href = '/login.html';
 		});
 	};
-
-
 });
