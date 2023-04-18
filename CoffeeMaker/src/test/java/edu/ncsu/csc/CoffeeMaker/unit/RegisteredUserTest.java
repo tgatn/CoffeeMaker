@@ -347,7 +347,6 @@ public class RegisteredUserTest {
     }
 
     @Test
-    @Transactional
     public void testManager () {
         final RegisteredUser manager = new RegisteredUser( "manager", "manager", "manager", "pass", Role.MANAGER );
         uService.save( manager );

@@ -30,9 +30,6 @@ public class Ticket extends DomainObject {
     /** Cost of the order */
     private int            totalCost;
 
-    // /** Unique number that separates it from all other orders */
-    // private int orderNumber;
-
     /** Customer who placed the order */
     private String         customer;
 
