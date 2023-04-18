@@ -120,3 +120,19 @@
   	color: white;
     background-color: lightcoral;
 }
+
+#manager-btn-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    justify-content: center;
+    gap: 10px;
+}
+
+.manager-btn {
+    width: 100%;
+    max-width: 200px;
+}
+
+#inventory, #inventory ul {
+	text-align: left;
+}
