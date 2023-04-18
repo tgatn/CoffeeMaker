@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import edu.ncsu.csc.CoffeeMaker.models.Inventory;
+import edu.ncsu.csc.CoffeeMaker.models.MenuItem;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 import edu.ncsu.csc.CoffeeMaker.models.User;
@@ -53,34 +55,6 @@ public class APITicketController extends APIController {
      */
     @Autowired
     private UserService      userService;
-
-    // /**
-    // * REST API method to provide POST access to the Ticket model. This is
-    // used
-    // * to create a new Ticket by automatically converting the JSON RequestBody
-    // * provided to a Ticket object. Invalid JSON will fail.
-    // *
-    // * @param order
-    // * The valid order to be saved.
-    // * @return ResponseEntity indicating success if the Order could be saved
-    // to
-    // * the database, or an error if it could not be
-    // */
-    // @PostMapping ( BASE_PATH + "/orders" )
-    // public ResponseEntity createOrder ( @RequestBody final Ticket order ) {
-    // if ( null != service.findByOrderNumber( order.getOrderNumber() ) ) {
-    // return new ResponseEntity( errorResponse( "Order number " +
-    // order.getOrderNumber() + " already exists" ),
-    // HttpStatus.CONFLICT );
-    // }
-    // else {
-    // service.save( order );
-    // return new ResponseEntity( successResponse( order.getOrderNumber() + "
-    // successfully created" ),
-    // HttpStatus.OK );
-    // }
-    //
-    // }
 
     /**
      * Gets the completed orders in the data base
@@ -176,21 +150,12 @@ public class APITicketController extends APIController {
      */
     @PostMapping ( BASE_PATH + "/orders" )
     public ResponseEntity createTicket ( @RequestBody final Ticket order ) {
-        System.out.println( "======================" + order.getTotalCost() );
-        System.out.println( "======================" + order.getCustomer() );
-        System.out.println( "======================" + order.getId() );
 
         // make sure the order isn't null
         if ( order == null || order.isComplete() ) {
             return new ResponseEntity( errorResponse( "Invalid Order" ), HttpStatus.CONFLICT );
         }
-        // check if the order number is already stored
-        // if ( order.getId() != 0 && null != service.findById( order.getId() )
-        // ) {
-        // return new ResponseEntity( errorResponse( "Order number " +
-        // order.getId() + " already exists" ),
-        // HttpStatus.CONFLICT );
-        // }
+
         // check if the username is valid
         final RegisteredUser u = userService.findByName( order.getCustomer() );
         if ( u == null || u.getRole() == User.Role.MANAGER || u.getRole() == User.Role.EMPLOYEE ) {
@@ -209,35 +174,21 @@ public class APITicketController extends APIController {
 
         // make sure inventory has enough ingredients and
         // deduct ingredients from inventory
-        // final Inventory inventory = inventoryService.getInventory();
-        // for ( final MenuItem r : order.getCart() ) {
-        // for ( int i = 0; i < r.getAmount(); i++ ) {
-        // if ( !inventory.enoughIngredients( r.getRecipe() ) ) {
-        // return new ResponseEntity( errorResponse( "Not enough ingredients in
-        // inventory" ),
-        // HttpStatus.CONFLICT );
-        // }
-        // inventory.useIngredients( r.getRecipe() );
-        // }
-        // }
-        System.out.println( "===========" + order.getTotalCost() );
-        // make sure the cost is up to date
-        // order.updateTotalCost();
-        System.out.println( "===========" + order.getTotalCost() );
+        final Inventory inventory = inventoryService.getInventory();
+        for ( final MenuItem r : order.getCart() ) {
+            for ( int i = 0; i < r.getAmount(); i++ ) {
+                if ( !inventory.enoughIngredients( r.getRecipe() ) ) {
+                    return new ResponseEntity( errorResponse( "Not enough ingredients in inventory" ),
+                            HttpStatus.CONFLICT );
+                }
+                inventory.useIngredients( r.getRecipe() );
+            }
+        }
 
-        // make sure the customer paid enough money
-        // int change = 0;
-        // if ( amtPaid < order.getTotalCost() ) {
-        // return new ResponseEntity( errorResponse( amtPaid + " is not enough
-        // money for the order" ),
-        // HttpStatus.NOT_ACCEPTABLE );
-        // }
-        // else {
-        // change = amtPaid - order.getTotalCost();
-        // }
+        // make sure the cost is up to date
+        order.updateTotalCost();
 
         // Add the valid order to the users list
-        System.out.println( "=============" + u.getUsername() );
         u.addOrder( order );
         userService.save( u );
         return new ResponseEntity( HttpStatus.OK );

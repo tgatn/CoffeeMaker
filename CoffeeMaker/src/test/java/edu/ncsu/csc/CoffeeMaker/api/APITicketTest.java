@@ -1,9 +1,7 @@
 package edu.ncsu.csc.CoffeeMaker.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -22,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import edu.ncsu.csc.CoffeeMaker.common.TestUtils;
@@ -69,7 +66,6 @@ public class APITicketTest {
     }
 
     @Test
-    @Transactional
     public void testAPITicket () throws Exception {
         // ensure there are no tickets to begin with
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Tickets in the CoffeeMaker" );
@@ -112,73 +108,52 @@ public class APITicketTest {
         final String orders = mvc.perform( get( "/api/v1/orders" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andReturn().getResponse().getContentAsString();
 
-        // assertEquals( 1, service.count() );
+        assertEquals( 1, service.count() );
         assertTrue( orders.contains( "Coffee" ) );
 
-        // make first Customer
-        final RegisteredUser njdksa = createUser( "customer1", "password1", "first1", "last1", Role.CUSTOMER );
+        ArrayList<Ticket> list = (ArrayList<Ticket>) service.findAll();
 
-        mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( customer1 ) ) );
+        long id = 0;
+        for ( final Ticket t : list ) {
+            id = t.getId();
+        }
 
-        assertEquals( 1, userService.count() );
+        mvc.perform( get( "/api/v1/orders/" + id ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isOk() );
 
-        // make second customer
+        mvc.perform( get( "/api/v1/orders/" + 100 ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isNotFound() );
+
+        // make a second customer
         final RegisteredUser customer2 = createUser( "customer2", "password2", "first2", "last2", Role.CUSTOMER );
 
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( customer2 ) ) ).andExpect( status().isOk() );
+                .content( TestUtils.asJsonString( customer2 ) ) );
 
         assertEquals( 2, userService.count() );
 
-        // get specific customer
-        final String customers = mvc
-                .perform( get( "/api/v1/users/customer2" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
-                .getResponse().getContentAsString();
+        // make two tickets for second customer
+        final Recipe r2 = createRecipe( "Tea", 2, 1, 1, 1, 1 );
+        recipeService.save( r2 );
+        final Ticket t2 = new Ticket( recipeList, "customer2", false, 7833 );
+        final Ticket t3 = new Ticket( recipeList, "customer2", false, 7834 );
+        t2.addRecipe( r1 );
+        t3.addRecipe( r2 );
+        mvc.perform( post( "/api/v1/orders" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( t2 ) ) ).andExpect( status().isOk() );
+        mvc.perform( post( "/api/v1/orders" ).contentType( MediaType.APPLICATION_JSON )
+                .content( TestUtils.asJsonString( t3 ) ) ).andExpect( status().isOk() );
 
-        assertTrue( customers.contains( "customer2" ) );
+        list = (ArrayList<Ticket>) service.findAll();
+        id = list.get( 1 ).getId();
 
-        // get null customer
-        mvc.perform( get( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isNotFound() );
-
-        // get all customers
-        final String customers2 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andReturn().getResponse().getContentAsString();
-
-        assertTrue( customers2.contains( "customer1" ) );
-        assertTrue( customers2.contains( "customer2" ) );
-
-        // check passwords
-        // check valid password
-        mvc.perform( post( "/api/v1/customer/login/customer2" ).contentType( MediaType.APPLICATION_JSON )
-                .content( "password2" ) ).andExpect( status().isOk() );
-        // check invalid password
-        mvc.perform( post( "/api/v1/customer/login/customer2" ).contentType( MediaType.APPLICATION_JSON )
-                .content( "password1" ) ).andExpect( status().isUnauthorized() );
-        // check invalid username
-        mvc.perform( post( "/api/v1/customer/login/random" ).contentType( MediaType.APPLICATION_JSON )
-                .content( "password1" ) ).andExpect( status().isNotFound() );
-        // check staff login
-        mvc.perform( post( "/api/v1/staff/login/customer2" ).contentType( MediaType.APPLICATION_JSON )
-                .content( "password2" ) ).andExpect( status().isUnauthorized() );
-
-        // check invalid password
-
-        // delete first customer
-        mvc.perform( delete( "/api/v1/users/customer1" ).contentType( MediaType.APPLICATION_JSON ) )
+        // fulfill t2
+        mvc.perform( post( "/api/v1/makecoffee/orders/" + id ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
-        assertEquals( 1, userService.count() );
-        final String customers3 = mvc.perform( get( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andReturn().getResponse().getContentAsString();
-        assertFalse( customers3.contains( "customer1" ) );
-        assertTrue( customers3.contains( "customer2" ) );
 
-        // delete null customer
-        mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
-                .andExpect( status().isNotFound() );
-
-        // service.deleteAll();
+        // get customer2 orders
+        mvc.perform( get( "/api/v1/orders/customers/complete" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
+                .getResponse();
 
     }
 
