@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
 import edu.ncsu.csc.CoffeeMaker.models.MenuItem;
+import edu.ncsu.csc.CoffeeMaker.models.Recipe;
 import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 import edu.ncsu.csc.CoffeeMaker.models.User;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
+import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
 import edu.ncsu.csc.CoffeeMaker.services.TicketService;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
@@ -49,6 +51,8 @@ public class APITicketController extends APIController {
     @Autowired
     private InventoryService inventoryService;
 
+    @Autowired
+    private RecipeService    recipeService;
     /**
      * UserService object, to be autowired in by Spring to allow for
      * manipulating the User model
@@ -149,8 +153,7 @@ public class APITicketController extends APIController {
      *         the database, or an error if it could not be
      */
     @PostMapping ( BASE_PATH + "/orders" )
-    public ResponseEntity createTicket ( @RequestBody final Ticket order ) {
-
+    public ResponseEntity createTicket ( @RequestBody Ticket order ) {
         // make sure the order isn't null
         if ( order == null || order.isComplete() ) {
             return new ResponseEntity( errorResponse( "Invalid Order" ), HttpStatus.CONFLICT );
@@ -165,6 +168,21 @@ public class APITicketController extends APIController {
         if ( order.getCart() == null || order.getCart().size() <= 0 ) {
             return new ResponseEntity( errorResponse( "Not enough recipes" ), HttpStatus.NOT_ACCEPTABLE );
         }
+
+        // ==========================================================================
+        // Reconstruct the order with the Recipe Objects
+        // ==========================================================================
+        // Create a new Ticket with the same customer
+        final Ticket t = new Ticket( order.getCustomer() );
+        // Add each recipe to the new Ticket
+        for ( final MenuItem r : order.getCart() ) {
+            final Recipe add = recipeService.findByName( r.getRecipe().getName() );
+            for ( int i = 0; i < r.getAmount(); i++ ) {
+                t.addRecipe( add );
+            }
+        }
+        // Ticket t should now have recipes with ingredients
+        order = t;
 
         // make sure all of the given recipes are valid
         // meaning no ingredient has a value of 0
