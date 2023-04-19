@@ -1,7 +1,13 @@
 var app = angular.module('myApp', ['ngCookies']);
 
 app.controller('myCtrl', function($scope, $window, $http, $cookies) {
-  $scope.customerName = $cookies.get('username');   
+$http.get('/api/v1/session/staff').then(function(response) {
+		$scope.customerName = response.data.username;
+		$scope.role = response.data.role;
+	}, function(error) {
+		console.log(error);
+		window.location.href="login";
+	});  
   $scope.viewFulfillOrders = () => {    
     $window.location.href = 'viewOrders.html';
   }

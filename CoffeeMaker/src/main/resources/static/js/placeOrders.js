@@ -1,7 +1,13 @@
 var app = angular.module('myApp', ['ngCookies']);
 
 app.controller('myCtrl', function($scope, $window, $http, $cookies, $sce) {
-	$scope.customerName = $cookies.get('username');
+	$http.get('/api/v1/session').then(function(response) {
+		$scope.customerName = response.data.username;
+		$scope.role = response.data.role;
+	}, function(error) {
+		console.log(error);
+		window.location.href="login";
+	});  
 	$scope.selectedDrink = null;
 
 	$http.get('/api/v1/recipes').then(function(response) {
@@ -21,7 +27,6 @@ app.controller('myCtrl', function($scope, $window, $http, $cookies, $sce) {
 	$scope.message = '';
 	$scope.messageType = '';
 	$scope.placeOrder = function() {
-		console.log('Place order button clicked');
 		$http.get(`/api/v1/recipes/${angular.fromJson($scope.selectedDrink).name}`).then(function(response) {
 			const recipe = response.data;
 			const cart = [{
