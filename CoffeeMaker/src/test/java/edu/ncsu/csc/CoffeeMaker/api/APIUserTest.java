@@ -201,6 +201,14 @@ public class APIUserTest {
 
     }
 
+    @Test
+    @Transactional
+    public void testGuest () throws Exception {
+        mvc.perform( post( "/api/v1/users/guest" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isOk() );
+        assertEquals( 1, service.count() );
+    }
+
     private RegisteredUser createUser ( final String username, final String password, final String first,
             final String last, final Role role ) {
         final RegisteredUser user = new RegisteredUser( username, password );

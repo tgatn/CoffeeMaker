@@ -537,4 +537,18 @@ public class RegisteredUserTest {
         return r;
 
     }
+
+    @Test
+    @Transactional
+    public void populate () {
+        final RegisteredUser cust = new RegisteredUser( "John", "Doe", "customer", "pass", Role.CUSTOMER );
+        uService.save( cust );
+
+        final RegisteredUser staff = new RegisteredUser( "Ming", "Hua", "employee", "pass", Role.EMPLOYEE );
+        uService.save( staff );
+
+        final RegisteredUser manager = new RegisteredUser( "Mary", "Jane", "manager", "pass", Role.MANAGER );
+        uService.save( manager );
+
+    }
 }

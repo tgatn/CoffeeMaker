@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,6 +68,7 @@ public class APITicketTest {
     }
 
     @Test
+    @Transactional
     public void testAPITicket () throws Exception {
         // ensure there are no tickets to begin with
         Assertions.assertEquals( 0, service.findAll().size(), "There should be no Tickets in the CoffeeMaker" );
@@ -135,10 +138,14 @@ public class APITicketTest {
         // make two tickets for second customer
         final Recipe r2 = createRecipe( "Tea", 2, 1, 1, 1, 1 );
         recipeService.save( r2 );
-        final Ticket t2 = new Ticket( recipeList, "customer2", false, 7833 );
-        final Ticket t3 = new Ticket( recipeList, "customer2", false, 7834 );
+        final ArrayList<MenuItem> recipeList2 = new ArrayList<MenuItem>();
+        final Ticket t2 = new Ticket( recipeList2, "customer2", false, 7833 );
+        final ArrayList<MenuItem> recipeList3 = new ArrayList<MenuItem>();
+        final Ticket t3 = new Ticket( recipeList3, "customer2", false, 7834 );
+        t2.addRecipe( r1 );
         t2.addRecipe( r1 );
         t3.addRecipe( r2 );
+        t3.addRecipe( r1 );
         mvc.perform( post( "/api/v1/orders" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( t2 ) ) ).andExpect( status().isOk() );
         mvc.perform( post( "/api/v1/orders" ).contentType( MediaType.APPLICATION_JSON )
@@ -151,9 +158,40 @@ public class APITicketTest {
         mvc.perform( post( "/api/v1/makecoffee/orders/" + id ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isOk() );
 
-        // get customer2 orders
-        mvc.perform( get( "/api/v1/orders/customers/complete" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
-                .getResponse();
+        // get complete orders
+        final String completeOrders = mvc
+                .perform( get( "/api/v1/orders/complete" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
+                .getResponse().getContentAsString();
+
+        // this is t2
+        assertTrue( completeOrders.contains( "\"totalCost\":2,\"customer\":\"customer2\"" ) );
+
+        // get pending orders
+        final String pendingOrders = mvc
+                .perform( get( "/api/v1/orders/pending" ).contentType( MediaType.APPLICATION_JSON ) ).andReturn()
+                .getResponse().getContentAsString();
+
+        // this is t1
+        assertTrue( pendingOrders.contains( "\"totalCost\":1,\"customer\":\"customer1\"" ) );
+
+        // this is t3
+        assertTrue( pendingOrders.contains( "\"totalCost\":3,\"customer\":\"customer2\"" ) );
+
+        // get pending orders from customer 2
+        final String pendingOrdersCust2 = mvc
+                .perform( get( "/api/v1/orders/customer2/pending" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
+
+        // this is t3
+        assertTrue( pendingOrdersCust2.contains( "\"totalCost\":3,\"customer\":\"customer2\"" ) );
+
+        // get pending orders from customer 2
+        final String completeOrdersCust2 = mvc
+                .perform( get( "/api/v1/orders/customer2/complete" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andReturn().getResponse().getContentAsString();
+
+        // this is t2
+        assertTrue( completeOrdersCust2.contains( "\"totalCost\":2,\"customer\":\"customer2\"" ) );
 
     }
 
