@@ -6,8 +6,8 @@ app.controller('myCtrl', function($scope, $http, $cookies, $timeout) {
 		$scope.role = response.data.role;
 	}, function(error) {
 		console.log(error);
-		window.location.href="login";
-	}); 
+		window.location.href = "login";
+	});
 	$scope.currentOrders = [];
 
 	$http.get(`api/v1/orders/pending`).then(function(response) {
@@ -27,20 +27,14 @@ app.controller('myCtrl', function($scope, $http, $cookies, $timeout) {
 		selectedOrders.forEach(function(order) {
 			$http.post(`api/v1/orders/${order.id}/complete`).then(function(response) {
 				console.log(`Order ${order.id} fulfilled.`);
+				$http.get(`api/v1/orders/pending`).then(function(response) {
+					$scope.currentOrders = response.data;
+				});
 			}, function(error) {
 				console.error(`Failed to fulfill order ${order.id}. Error: ${error}`);
 			});
 		});
 		alert('Selected orders have been fulfilled.');
-		$scope.refreshOrders();
-	};
-
-	$scope.refreshOrders = function() {
-		$timeout(function() {
-			$http.get(`api/v1/orders/pending`).then(function(response) {
-				$scope.currentOrders = response.data;
-			});
-		});
 	};
 
 	$scope.logout = function() {
