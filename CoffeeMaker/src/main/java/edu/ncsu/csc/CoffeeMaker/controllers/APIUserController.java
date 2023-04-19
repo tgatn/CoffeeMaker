@@ -186,6 +186,7 @@ public class APIUserController extends APIController {
         service.save( user );
         user = service.findByName( "TEMP GUEST" );
         user.setUsername( "Guest" + user.getId() );
+        service.save( user );
         return new ResponseEntity( successResponse( user.getUsername() + " successfully created" ), HttpStatus.OK );
 
     }
