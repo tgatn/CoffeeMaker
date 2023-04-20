@@ -21,6 +21,23 @@
         box-shadow: rgba(143, 104, 104, 0.24) 0px 3px 8px;
     }
 
+    #customerLoginForm {
+        display:grid;
+        justify-content: center;
+        gap: 20px;
+        border: 2px solid lightgray;
+        background-color: white;
+        border-radius: 10px;
+        position: fixed;
+        width: 575px;
+        height: 450px;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+        box-shadow: rgba(143, 104, 104, 0.24) 0px 3px 8px;
+    }
+
     h1 {
         text-align: center;
     }
@@ -45,13 +62,17 @@
         width: 300px;
     }
 
+    .btn-dark:hover {
+        background-color: white;
+    }
+
     @media only screen and (max-width: 600px) {
-        .loginForm {
+        .loginForm, #customerLoginForm {
         width: 85%;
         height: 50%;
         }
 
-        .login-button {
+        .login-button, #customerLoginForm{
             justify-self: center;
             max-width: 75%;
             height: 75%;
@@ -66,4 +87,52 @@
         }
     }
 
+   .order-btn:hover {
+    background-color: white !important;
+    color: black !important;
+   }
    
+    .profile-div {
+    display: grid;
+    position: absolute;
+    color:black;
+    top: 15px;
+    left: 10px;
+    gap: 5px;    
+  }
+  
+
+  h4 {
+  position: relative;
+  font-size: 12px !important;
+  }
+  
+  .success-message {
+  	display: flex;
+  	justify-content: center;
+  	color: green;
+    background-color: lightgreen;
+}
+
+.error-message {
+	display: flex;
+  	justify-content: center;
+  	color: white;
+    background-color: lightcoral;
+}
+
+#manager-btn-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    justify-content: center;
+    gap: 10px;
+}
+
+.manager-btn {
+    width: 100%;
+    max-width: 200px;
+}
+
+#inventory, #inventory ul {
+	text-align: left;
+}

@@ -1,10 +1,15 @@
 package edu.ncsu.csc.CoffeeMaker.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  * RegisteredUser class represents a User who has a registered account in the
@@ -21,22 +26,26 @@ public class RegisteredUser extends User {
     /** User id */
     @Id
     @GeneratedValue
-    private Long   id;
+    private Long         id;
 
     /** User name of the Registered User */
-    private String username;
+    private String       username;
 
     /** Password of the Registered User */
-    private String password;
+    private String       password;
 
     /** The user's first name */
-    private String firstName;
+    private String       firstName;
 
     /** The user's last name */
-    private String lastName;
+    private String       lastName;
 
     /** User role */
-    private Role   role;
+    private Role         role;
+
+    /** list of current orders */
+    @OneToMany ( cascade = CascadeType.ALL, fetch = FetchType.EAGER )
+    private List<Ticket> orders;
 
     /**
      * Constructs a RegisteredUser using the given user name and password.
@@ -52,6 +61,7 @@ public class RegisteredUser extends User {
 
     /**
      * Creates a user with the given parameters.
+     *
      *
      * @param first
      *            users first name
@@ -71,17 +81,22 @@ public class RegisteredUser extends User {
         this.setUsername( user );
         this.setPassword( pass );
         setRole( role );
+
+        // Only customer will have their order history tracked
+        if ( role == Role.CUSTOMER ) {
+            this.orders = new ArrayList<Ticket>();
+        }
+        else {
+            this.orders = null;
+        }
     }
 
     /**
      * Creates a default user for the coffee maker.
      */
     public RegisteredUser () {
-        this.username = "";
-        this.password = "";
-        this.firstName = "";
-        this.lastName = "";
-        this.role = null;
+        this( "", "", "", "", null );
+        this.orders = new ArrayList<Ticket>();
     }
 
     /**
@@ -180,6 +195,61 @@ public class RegisteredUser extends User {
      */
     public void setLastName ( final String last ) {
         this.lastName = last;
+    }
+
+    /**
+     * Returns orders list
+     *
+     * @return the completeOrders
+     */
+    public List<Ticket> getOrders () {
+        return orders;
+    }
+
+    /**
+     * Adds the given order to current orders
+     *
+     * @param order
+     *            order to add
+     */
+    public void addOrder ( final Ticket order ) {
+        orders.add( order );
+    }
+
+    /**
+     * Completes the given order
+     *
+     * @param order
+     *            order to complete
+     * @return true if found and completed false otherwise
+     */
+    public boolean completeOrder ( final Ticket order ) {
+        if ( order == null ) {
+            return false;
+        }
+        for ( int i = 0; i < orders.size(); i++ ) {
+            if ( orders.get( i ).getId() == order.getId() ) {
+                orders.get( i ).fulfill();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get a list of all orders waiting to be fulfilled.
+     *
+     * @return the list of orders waiting to be fulfilled.
+     */
+    public List<Ticket> getPendingOrders () {
+        final List<Ticket> pending = new ArrayList<Ticket>();
+        for ( final Ticket t : orders ) {
+            if ( !t.isComplete() ) {
+                pending.add( t );
+            }
+        }
+        return pending;
     }
 
     /**

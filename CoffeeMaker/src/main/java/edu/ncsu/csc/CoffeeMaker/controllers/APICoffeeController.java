@@ -9,9 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.ncsu.csc.CoffeeMaker.models.Inventory;
+import edu.ncsu.csc.CoffeeMaker.models.MenuItem;
 import edu.ncsu.csc.CoffeeMaker.models.Recipe;
+import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
+import edu.ncsu.csc.CoffeeMaker.models.Ticket;
 import edu.ncsu.csc.CoffeeMaker.services.InventoryService;
 import edu.ncsu.csc.CoffeeMaker.services.RecipeService;
+import edu.ncsu.csc.CoffeeMaker.services.TicketService;
+import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
 /**
  *
@@ -43,6 +48,20 @@ public class APICoffeeController extends APIController {
     private RecipeService    recipeService;
 
     /**
+     * TicketService object, to be autowired in by Spring to allow for
+     * manipulating the Ticket model
+     */
+    @Autowired
+    private TicketService    ticketService;
+
+    /**
+     * UserService object, to be autowired in by Spring to allow for
+     * manipulating the User model
+     */
+    @Autowired
+    private UserService      userService;
+
+    /**
      * REST API method to make coffee by completing a POST request with the ID
      * of the recipe as the path variable and the amount that has been paid as
      * the body of the response
@@ -71,6 +90,45 @@ public class APICoffeeController extends APIController {
         }
         return new ResponseEntity<String>( successResponse( String.valueOf( change ) ), HttpStatus.OK );
 
+    }
+
+    /**
+     * REST API method to make coffee by completing a POST request with the ID
+     * of the ticket as the path variable and the amount that has been paid as
+     * the body of the response
+     *
+     * @param orderNumber
+     *            tickets unique order number
+     * @return The change the customer is due if successful
+     */
+    @PostMapping ( BASE_PATH + "/makecoffee/orders/{orderNumber}" )
+    public ResponseEntity fulfillTicket ( @PathVariable ( "orderNumber" ) final long orderNumber ) {
+        final Ticket ticket = ticketService.findById( orderNumber );
+        // check if the ticket was null or already completed
+        if ( ticket == null || ticket.isComplete() ) {
+            return new ResponseEntity( errorResponse( "Invalid order number" ), HttpStatus.NOT_FOUND );
+        }
+
+        // remove the ingredients from the inventory
+        final Inventory inventory = inventoryService.getInventory();
+        for ( final MenuItem r : ticket.getCart() ) {
+            for ( int i = 0; i < r.getAmount(); i++ ) {
+                if ( !inventory.useIngredients( r.getRecipe() ) ) {
+                    return new ResponseEntity( errorResponse( "Not enough ingredients in inventory" ),
+                            HttpStatus.CONFLICT );
+                }
+            }
+        }
+
+        // move the ticket into the users past orders table
+        final RegisteredUser u = userService.findByName( ticket.getCustomer() );
+        u.completeOrder( ticket );
+        userService.save( u );
+
+        // save the inventory
+        inventoryService.save( inventory );
+
+        return new ResponseEntity( HttpStatus.OK );
     }
 
     /**

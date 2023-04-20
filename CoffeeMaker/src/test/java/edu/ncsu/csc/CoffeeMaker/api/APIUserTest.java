@@ -28,9 +28,9 @@ import edu.ncsu.csc.CoffeeMaker.models.RegisteredUser;
 import edu.ncsu.csc.CoffeeMaker.models.User.Role;
 import edu.ncsu.csc.CoffeeMaker.services.UserService;
 
+@ExtendWith ( SpringExtension.class )
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith ( SpringExtension.class )
 public class APIUserTest {
 
     /**
@@ -53,7 +53,6 @@ public class APIUserTest {
         mvc = MockMvcBuilders.webAppContextSetup( context ).build();
 
         service.deleteAll();
-        service.deleteAll();
     }
 
     @Test
@@ -65,20 +64,18 @@ public class APIUserTest {
         // make first Customer
         final RegisteredUser customer1 = createUser( "customer1", "password1", "first1", "last1", Role.CUSTOMER );
 
-        service.save( customer1 );
-        assertEquals( 1, service.count() );
-
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( customer1 ) ) );
+
+        assertEquals( 1, service.count() );
 
         // make second customer
         final RegisteredUser customer2 = createUser( "customer2", "password2", "first2", "last2", Role.CUSTOMER );
 
-        service.save( customer2 );
-        assertEquals( 2, service.count() );
-
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
-                .content( TestUtils.asJsonString( customer2 ) ) );
+                .content( TestUtils.asJsonString( customer2 ) ) ).andExpect( status().isOk() );
+
+        assertEquals( 2, service.count() );
 
         // get specific customer
         final String customers = mvc
@@ -127,6 +124,11 @@ public class APIUserTest {
         mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
+        mvc.perform( get( "/api/v1/session" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isNotFound() );
+
+        service.deleteAll();
+
     }
 
     @Test
@@ -138,20 +140,18 @@ public class APIUserTest {
         // make first Staff
         final RegisteredUser staff1 = createUser( "staff1", "password1", "first1", "last1", Role.EMPLOYEE );
 
-        service.save( staff1 );
-        assertEquals( 1, service.count() );
-
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( staff1 ) ) );
+
+        assertEquals( 1, service.count() );
 
         // make second Staff
         final RegisteredUser staff2 = createUser( "staff2", "password2", "first2", "last2", Role.EMPLOYEE );
 
-        service.save( staff2 );
-        assertEquals( 2, service.count() );
-
         mvc.perform( post( "/api/v1/users" ).contentType( MediaType.APPLICATION_JSON )
                 .content( TestUtils.asJsonString( staff2 ) ) );
+
+        assertEquals( 2, service.count() );
 
         // get specific Staff
         final String staffs = mvc.perform( get( "/api/v1/users/staff2" ).contentType( MediaType.APPLICATION_JSON ) )
@@ -200,6 +200,19 @@ public class APIUserTest {
         mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
+        mvc.perform( get( "/api/v1/session/staff" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isNotFound() );
+
+        // service.deleteAll();
+
+    }
+
+    @Test
+    @Transactional
+    public void testGuest () throws Exception {
+        mvc.perform( post( "/api/v1/users/guest" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isOk() );
+        assertEquals( 1, service.count() );
     }
 
     private RegisteredUser createUser ( final String username, final String password, final String first,
