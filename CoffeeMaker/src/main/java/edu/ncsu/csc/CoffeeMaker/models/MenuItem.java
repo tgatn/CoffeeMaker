@@ -31,6 +31,9 @@ public class MenuItem extends DomainObject {
     /** The count of the recipe */
     private Integer amount;
 
+    /**
+     * default menu item constructor
+     */
     public MenuItem () {
         this.recipe = new Recipe();
         this.amount = 0;
@@ -120,11 +123,12 @@ public class MenuItem extends DomainObject {
      * Each item in the order must have positive amounts
      *
      * @param amount
+     *            number of recipes to be ordered
      */
     public void setAmount ( final Integer amount ) {
         if ( amount <= 0 ) {
             throw new IllegalArgumentException( "Amount must be positive." );
-            // TODO
+
         }
         this.amount = amount;
     }

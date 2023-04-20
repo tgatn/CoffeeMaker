@@ -51,6 +51,10 @@ public class APIUserController extends APIController {
      *            the user trying to login
      * @param password
      *            the entered password
+     * @param response
+     *            the response
+     * @param session
+     *            the login session
      *
      * @return response to the request
      */
@@ -85,6 +89,10 @@ public class APIUserController extends APIController {
      *            the user trying to login
      * @param password
      *            the entered password
+     * @param response
+     *            the response
+     * @param session
+     *            the login session
      *
      * @return response to the request
      */
@@ -163,6 +171,9 @@ public class APIUserController extends APIController {
     /**
      * REST API method to provide POST access to the User guest model. This is
      * used to create a new guest User
+     *
+     * @param session
+     *            the session
      *
      * @return ResponseEntity indicating success if the User could be saved to
      *         the database, or an error if it could not be

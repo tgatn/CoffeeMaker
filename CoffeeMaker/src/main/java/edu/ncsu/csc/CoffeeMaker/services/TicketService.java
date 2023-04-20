@@ -37,6 +37,13 @@ public class TicketService extends Service<Ticket, Long> {
         return ticketRepository;
     }
 
+    /**
+     * Returns a list of tickets that are associated with the given username.
+     *
+     * @param username
+     *            given users username
+     * @return The list of associated tickets
+     */
     public List<Ticket> findAllByUsername ( final String username ) {
         final List<Ticket> allTickets = findAll();
         final List<Ticket> userTickets = new ArrayList<>();

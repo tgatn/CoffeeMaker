@@ -51,8 +51,13 @@ public class APITicketController extends APIController {
     @Autowired
     private InventoryService inventoryService;
 
+    /**
+     * RecipeService object, to be autowired in by Spring to allow for
+     * manipulating the Recipe model
+     */
     @Autowired
     private RecipeService    recipeService;
+
     /**
      * UserService object, to be autowired in by Spring to allow for
      * manipulating the User model
@@ -147,13 +152,11 @@ public class APITicketController extends APIController {
      *
      * @param order
      *            The valid order to be saved.
-     * @param amtPaid
-     *            the amount of money paid.
      * @return ResponseEntity indicating success if the Order could be saved to
      *         the database, or an error if it could not be
      */
     @PostMapping ( BASE_PATH + "/orders" )
-    public ResponseEntity createTicket ( @RequestBody Ticket order ) {
+    public ResponseEntity createTicket ( @RequestBody final Ticket order ) {
         // make sure the order isn't null
         if ( order == null || order.isComplete() ) {
             return new ResponseEntity( errorResponse( "Invalid Order" ), HttpStatus.CONFLICT );
@@ -181,19 +184,17 @@ public class APITicketController extends APIController {
                 t.addRecipe( add );
             }
         }
-        // Ticket t should now have recipes with ingredients
-        order = t;
 
         // make sure all of the given recipes are valid
         // meaning no ingredient has a value of 0
-        if ( !order.checkOrder() ) {
+        if ( !t.checkOrder() ) {
             return new ResponseEntity( errorResponse( "Invalid recipes" ), HttpStatus.NOT_ACCEPTABLE );
         }
 
         // make sure inventory has enough ingredients and
         // deduct ingredients from inventory
         final Inventory inventory = inventoryService.getInventory();
-        for ( final MenuItem r : order.getCart() ) {
+        for ( final MenuItem r : t.getCart() ) {
             for ( int i = 0; i < r.getAmount(); i++ ) {
                 if ( !inventory.enoughIngredients( r.getRecipe() ) ) {
                     return new ResponseEntity( errorResponse( "Not enough ingredients in inventory" ),
@@ -204,10 +205,10 @@ public class APITicketController extends APIController {
         }
 
         // make sure the cost is up to date
-        order.updateTotalCost();
+        t.updateTotalCost();
 
         // Add the valid order to the users list
-        u.addOrder( order );
+        u.addOrder( t );
         userService.save( u );
         return new ResponseEntity( HttpStatus.OK );
     }

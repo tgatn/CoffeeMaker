@@ -50,6 +50,12 @@ public class Ticket extends DomainObject {
         this.totalCost = 0;
     }
 
+    /**
+     * Constructs a new ticket for the given user id
+     *
+     * @param customer
+     *            the customer id for the ticket
+     */
     public Ticket ( final String customer ) {
         this( new ArrayList<MenuItem>(), customer, false, 0 );
     }
@@ -61,6 +67,10 @@ public class Ticket extends DomainObject {
      *            list of recipes
      * @param customer
      *            order's customer
+     * @param isComplete
+     *            boolean representing whether the ticket is complete
+     * @param id
+     *            id to be set for the ticket
      */
     public Ticket ( final List<MenuItem> recipes, final String customer, final boolean isComplete, final long id ) {
         setRecipes( recipes );
