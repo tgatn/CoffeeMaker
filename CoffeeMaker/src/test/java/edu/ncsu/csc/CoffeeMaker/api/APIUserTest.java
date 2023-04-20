@@ -124,6 +124,9 @@ public class APIUserTest {
         mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
+        mvc.perform( get( "/api/v1/session" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isNotFound() );
+
         service.deleteAll();
 
     }
@@ -195,6 +198,9 @@ public class APIUserTest {
 
         // delete null staff
         mvc.perform( delete( "/api/v1/users/does_not_exist" ).contentType( MediaType.APPLICATION_JSON ) )
+                .andExpect( status().isNotFound() );
+
+        mvc.perform( get( "/api/v1/session/staff" ).contentType( MediaType.APPLICATION_JSON ) )
                 .andExpect( status().isNotFound() );
 
         // service.deleteAll();
