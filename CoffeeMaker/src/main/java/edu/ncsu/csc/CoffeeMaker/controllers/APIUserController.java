@@ -1,6 +1,13 @@
 package edu.ncsu.csc.CoffeeMaker.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,11 +51,16 @@ public class APIUserController extends APIController {
      *            the user trying to login
      * @param password
      *            the entered password
+     * @param response
+     *            the response
+     * @param session
+     *            the login session
      *
      * @return response to the request
      */
     @PostMapping ( BASE_PATH + "/customer/login/{username}" )
-    public ResponseEntity customerLogin ( @PathVariable final String username, @RequestBody final String password ) {
+    public ResponseEntity customerLogin ( @PathVariable final String username, @RequestBody final String password,
+            final HttpServletResponse response, final HttpSession session ) {
         final RegisteredUser dbUser = service.findByName( username );
         if ( dbUser == null ) {
             return new ResponseEntity( errorResponse( "No User found with username " + username ),
@@ -63,8 +75,11 @@ public class APIUserController extends APIController {
         if ( !dbUser.checkPassword( password ) ) {
             return new ResponseEntity( errorResponse( "Invalid password" ), HttpStatus.UNAUTHORIZED );
         }
+        session.setAttribute( "username", dbUser.getUsername() );
+        session.setAttribute( "role", dbUser.getRole() );
 
         return new ResponseEntity( successResponse( username + " successfully logged in" ), HttpStatus.OK );
+
     }
 
     /**
@@ -74,11 +89,16 @@ public class APIUserController extends APIController {
      *            the user trying to login
      * @param password
      *            the entered password
+     * @param response
+     *            the response
+     * @param session
+     *            the login session
      *
      * @return response to the request
      */
     @PostMapping ( BASE_PATH + "/staff/login/{username}" )
-    public ResponseEntity staffLogin ( @PathVariable final String username, @RequestBody final String password ) {
+    public ResponseEntity staffLogin ( @PathVariable final String username, @RequestBody final String password,
+            final HttpServletResponse response, final HttpSession session ) {
         final RegisteredUser dbUser = service.findByName( username );
         if ( dbUser == null ) {
             return new ResponseEntity( errorResponse( "No User found with username " + username ),
@@ -92,8 +112,10 @@ public class APIUserController extends APIController {
         if ( !dbUser.checkPassword( password ) ) {
             return new ResponseEntity( errorResponse( "Invalid password" ), HttpStatus.UNAUTHORIZED );
         }
+        session.setAttribute( "username", dbUser.getUsername() );
+        session.setAttribute( "role", dbUser.getRole() );
 
-        return new ResponseEntity( successResponse( username + " successfully logged in" ), HttpStatus.OK );
+        return new ResponseEntity( dbUser.getRole(), HttpStatus.OK );
     }
 
     /**
@@ -120,6 +142,7 @@ public class APIUserController extends APIController {
         return null == user
                 ? new ResponseEntity( errorResponse( "No User found with username " + username ), HttpStatus.NOT_FOUND )
                 : new ResponseEntity( user, HttpStatus.OK );
+
     }
 
     /**
@@ -146,6 +169,79 @@ public class APIUserController extends APIController {
     }
 
     /**
+     * REST API method to provide POST access to the User guest model. This is
+     * used to create a new guest User
+     *
+     * @param session
+     *            the session
+     *
+     * @return ResponseEntity indicating success if the User could be saved to
+     *         the database, or an error if it could not be
+     */
+    @PostMapping ( BASE_PATH + "/users/guest" )
+    public ResponseEntity createGuestUser ( final HttpSession session ) {
+        if ( null != service.findByName( "TEMP GUEST" ) ) {
+            return new ResponseEntity( errorResponse( "Could not create guest" ), HttpStatus.CONFLICT );
+        }
+        RegisteredUser user = new RegisteredUser();
+        user.setRole( User.Role.GUEST );
+        user.setUsername( "TEMP GUEST" );
+        service.save( user );
+        user = service.findByName( "TEMP GUEST" );
+        user.setUsername( "Guest" + user.getId() );
+        service.save( user );
+        session.setAttribute( "username", user.getUsername() );
+        session.setAttribute( "role", user.getRole() );
+        return new ResponseEntity( successResponse( user.getUsername() + "successfully created" ), HttpStatus.OK );
+
+    }
+
+    /**
+     * REST API method to provide GET access to the a session.
+     *
+     * @param request
+     *            the servlet request
+     * @return ResponseEntity indicating success if the session exists or an
+     *         error if it does not
+     */
+    @GetMapping ( BASE_PATH + "/session" )
+    public ResponseEntity< ? > getSessionInfo ( final HttpServletRequest request ) {
+        final HttpSession session = request.getSession( false );
+        if ( session == null ) {
+            return new ResponseEntity<>( errorResponse( "Session not found" ), HttpStatus.NOT_FOUND );
+        }
+        final Map<String, Object> sessionData = new HashMap<>();
+        sessionData.put( "username", session.getAttribute( "username" ) );
+        sessionData.put( "role", session.getAttribute( "role" ) );
+        return new ResponseEntity<>( sessionData, HttpStatus.OK );
+    }
+
+    /**
+     * REST API method to provide GET access to the a staff session.
+     *
+     * @param request
+     *            the servlet request
+     * @return ResponseEntity indicating success if the session exists or an
+     *         error if it does not, or if the user is not a staff member
+     */
+    @GetMapping ( BASE_PATH + "/session/staff" )
+    public ResponseEntity< ? > getSessionInfoManager ( final HttpServletRequest request ) {
+        final HttpSession session = request.getSession( false );
+        if ( session == null ) {
+            return new ResponseEntity<>( errorResponse( "Session not found" ), HttpStatus.NOT_FOUND );
+        }
+        if ( session.getAttribute( "role" ) != User.Role.MANAGER
+                && session.getAttribute( "role" ) != User.Role.EMPLOYEE ) {
+            return new ResponseEntity<>( session.getAttribute( "role" ), HttpStatus.UNAUTHORIZED );
+        }
+        final Map<String, Object> sessionData = new HashMap<>();
+        sessionData.put( "username", session.getAttribute( "username" ) );
+        sessionData.put( "role", session.getAttribute( "role" ) );
+
+        return new ResponseEntity<>( sessionData, HttpStatus.OK );
+    }
+
+    /**
      * REST API method to allow deleting a User from the CoffeeMaker's system,
      * by making a DELETE request to the API endpoint and indicating the User to
      * delete (as a path variable)
@@ -165,6 +261,31 @@ public class APIUserController extends APIController {
         service.delete( user );
 
         return new ResponseEntity( successResponse( username + " was deleted successfully" ), HttpStatus.OK );
+    }
+
+    /**
+     * REST API method to provide logout functionality for users
+     *
+     * @param session
+     *            the current user's HttpSession
+     * @param response
+     *            the current HttpServletResponse
+     * @return response to the request
+     */
+    @PostMapping ( BASE_PATH + "/logout" )
+    public ResponseEntity logout ( final HttpSession session, final HttpServletResponse response ) {
+        // Invalidate the current session and remove the user's session
+        // attribute
+        session.removeAttribute( "username" );
+        session.invalidate();
+        // Clear the authentication cookie
+        final Cookie cookie = new Cookie( "username", "" );
+        cookie.setMaxAge( 0 );
+        cookie.setDomain( "localhost" );
+        cookie.setPath( "/" );
+        response.addCookie( cookie );
+
+        return new ResponseEntity( successResponse( "User successfully logged out" ), HttpStatus.OK );
     }
 
 }
